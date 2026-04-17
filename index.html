@@ -214,13 +214,13 @@
     .amount-range{display:none;}
   }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 
 
-<!-- PASSWORD SCREEN -->
 <div id="pw-screen" style="display:flex;position:fixed;inset:0;background:#0d0f14;z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:20px;">
-  <div style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:#00d4aa;letter-spacing:3px;text-transform:uppercase;">DECOR MASTER</div>
+  <div style="font-family:'IBM Plex Mono',monospace;font-size:14px;font-weight:600;color:#00d4aa;letter-spacing:3px;">DECOR MASTER</div>
   <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#4a5268;letter-spacing:2px;margin-top:-10px;">FINANCIAL LEDGER</div>
   <div style="background:#161922;border:1px solid #2a3040;border-radius:12px;padding:32px;width:100%;max-width:320px;display:flex;flex-direction:column;gap:14px;">
     <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8890a8;letter-spacing:1px;">ENTER PASSWORD</div>
@@ -358,34 +358,17 @@
 
 <div class="toast" id="toast"></div>
 
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 <script>
 
-// ============================================================
-//  FIREBASE CONFIG
-// ============================================================
-var firebaseConfig = {
-  apiKey: "AIzaSyCU_AxJYMWuRUGULdQ44rwPiFelLvqx0ow",
-  authDomain: "dmdm-3b9b4.firebaseapp.com",
-  databaseURL: "https://dmdm-3b9b4-default-rtdb.europe-west1.firebasedatabase.app",
-  projectId: "dmdm-3b9b4",
-  storageBucket: "dmdm-3b9b4.firebasestorage.app",
-  messagingSenderId: "918496873407",
-  appId: "1:918496873407:web:282d0f558078b1f7cc2f0a"
-};
-firebase.initializeApp(firebaseConfig);
-var db = firebase.database();
-var LEDGER_REF = db.ref('ledger');
-
-// PASSWORD
+var _surl = 'https://urxixvcddtsluwikwpvl.supabase.co';
+var _skey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVyeGl4dmNkZHRzbHV3aWt3cHZsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYxMTc1NTIsImV4cCI6MjA5MTY5MzU1Mn0.Mj3tBhdMaVV1A3LTA2thyNo0GsqIcjDBJfv96p8tqlY';
+var supa = window.supabase.createClient(_surl, _skey);
 var PASSWORD = 'dmdm2024';
 
 function checkPassword() {
   var val = document.getElementById('pw-input').value;
   if (val === PASSWORD) {
     document.getElementById('pw-screen').style.display = 'none';
-    // focus input for convenience
     document.getElementById('search').focus();
   } else {
     document.getElementById('pw-error').style.display = 'block';
@@ -394,11 +377,9 @@ function checkPassword() {
   }
 }
 
-// Focus password input on load
 window.addEventListener('load', function() {
   document.getElementById('pw-input').focus();
 });
-
 
 // ============================================================
 //  INITIAL DATA (115 transactions from Excel)
@@ -530,30 +511,42 @@ var editingNoteId = null, editingId = null, currentType = 'income';
 var CAT_LABELS = {container:'Container',freight:'Freight',customs:'Customs',payment:'Payment',personal:'Personal',other:'Other'};
 var CAT_COLORS = {container:'#6495ed',freight:'#ffd166',customs:'#ff6b6b',payment:'#00d4aa',personal:'#c8a0ff',other:'#8890a8'};
 
-function load() {
-  // Show loading state
+async function load() {
   document.getElementById('stat-balance').textContent = '...';
-  // Listen for Firebase data
-  LEDGER_REF.on('value', function(snapshot) {
-    var data = snapshot.val();
-    if (data && data.transactions) {
-      transactions = data.transactions;
-      nextId = data.nextId || 200;
+  try {
+    var res = await supa.from('ledger').select('*').eq('id', 1);
+    if (res.data && res.data.length > 0 && res.data[0].data) {
+      var d = res.data[0].data;
+      transactions = d.transactions;
+      nextId = d.nextId || 200;
     } else {
-      // First time - upload initial data
-      transactions = INITIAL.map(function(t){return Object.assign({},t);});
+      transactions = INITIAL.map(function(t){ return Object.assign({}, t); });
       nextId = 116;
-      persist();
+      await supa.from('ledger').insert({id: 1, data: {transactions: transactions, nextId: nextId}});
     }
-    renderTable();
-    if (hasChangesSinceBackup()) showBanner();
-  });
+  } catch(e) {
+    console.error('Supabase error:', e);
+    var saved = localStorage.getItem('dm_ledger_v3');
+    if (saved) {
+      var d = JSON.parse(saved);
+      transactions = d.transactions;
+      nextId = d.nextId || 200;
+    } else {
+      transactions = INITIAL.map(function(t){ return Object.assign({}, t); });
+      nextId = 116;
+    }
+  }
+  renderTable();
+  if (hasChangesSinceBackup()) showBanner();
 }
 
-function persist() {
-  LEDGER_REF.set({transactions: transactions, nextId: nextId});
-  // Also keep local fingerprint for backup tracking
-  localStorage.setItem('dm_ledger_v3', JSON.stringify({transactions:transactions, nextId:nextId}));
+async function persist() {
+  try {
+    await supa.from('ledger').upsert({id: 1, data: {transactions: transactions, nextId: nextId}});
+  } catch(e) {
+    console.error('persist error:', e);
+  }
+  localStorage.setItem('dm_ledger_v3', JSON.stringify({transactions: transactions, nextId: nextId}));
 }
 
 // ============================================================
@@ -962,9 +955,7 @@ function toggleTheme() {
   localStorage.setItem('dm_theme', isLight ? 'light' : 'dark');
 }
 
-// Restore theme first
-if (localStorage.getItem("dm_theme") === "light") { document.body.classList.add("light"); document.getElementById("theme-btn").textContent = "🌙"; }
-// Load data from Firebase (will call renderTable when ready)
+if (localStorage.getItem('dm_theme') === 'light') { document.body.classList.add('light'); document.getElementById('theme-btn').textContent = '🌙'; }
 load();
 // Auto-suggest backup on open if data changed since last backup
 if (hasChangesSinceBackup()) {
