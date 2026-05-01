@@ -1,0 +1,1547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="format-detection" content="telephone=no">
+<title>Decor Master — Purchase Orders</title>
+<script>
+  // Track which libraries loaded successfully
+  window.LIBS = { jspdf: false, jspdf_autotable: false, xlsx: false, exceljs: false, filesaver: false };
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" onload="LIBS.jspdf=true" onerror="console.warn('jspdf failed')"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.0/jspdf.plugin.autotable.min.js" onload="LIBS.jspdf_autotable=true" onerror="console.warn('jspdf-autotable failed')"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" onload="LIBS.xlsx=true" onerror="console.warn('xlsx failed')"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js" onload="LIBS.exceljs=true" onerror="console.warn('exceljs failed')"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js" onload="LIBS.filesaver=true" onerror="console.warn('filesaver failed')"></script>
+<style>
+  :root{
+    --bg:#f5f3ee;
+    --surface:#ffffff;
+    --ink:#0F2018;
+    --ink-soft:#3a4a42;
+    --muted:#8a9591;
+    --line:#e3ddd1;
+    --accent:#B07820;
+    --accent-soft:#d4a05030;
+    --green:#0F2018;
+    --danger:#a83232;
+    --ok:#1f6b3a;
+    --shadow:0 1px 2px rgba(15,32,24,.04), 0 8px 24px rgba(15,32,24,.06);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:rgba(176,120,32,0.15)}
+  html,body{height:100%;-webkit-text-size-adjust:100%}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    font-size:14px;
+    line-height:1.5;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  button, input, select, textarea, a, [data-act], .picker-item, .tab-btn{
+    -webkit-tap-highlight-color:rgba(176,120,32,0.2);
+    touch-action:manipulation;
+  }
+  button{cursor:pointer;-webkit-appearance:none;appearance:none}
+  .app{max-width:1280px;margin:0 auto;padding:0 20px}
+
+  header{
+    padding:24px 0 16px;
+    border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;
+  }
+  .brand{display:flex;align-items:baseline;gap:10px}
+  .brand h1{
+    font-family:"Bodoni Moda",Georgia,serif;
+    font-weight:600;
+    font-size:24px;
+    letter-spacing:.5px;
+  }
+  .brand span{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:1.5px}
+
+  nav{display:flex;gap:4px;background:var(--surface);padding:4px;border-radius:8px;border:1px solid var(--line)}
+  nav button{
+    background:transparent;border:0;cursor:pointer;
+    padding:8px 16px;border-radius:6px;
+    font:inherit;color:var(--ink-soft);font-weight:500;
+    transition:all .15s;
+  }
+  nav button.active{background:var(--ink);color:#fff}
+  nav button:hover:not(.active){background:var(--bg)}
+
+  main{padding:24px 0 60px}
+  .panel{
+    background:var(--surface);
+    border:1px solid var(--line);
+    border-radius:12px;
+    box-shadow:var(--shadow);
+    overflow:hidden;
+  }
+  .panel-header{
+    padding:16px 20px;
+    border-bottom:1px solid var(--line);
+    display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+  }
+  .panel-header h2{font-size:16px;font-weight:600}
+  .panel-body{padding:20px}
+
+  .btn{
+    display:inline-flex;align-items:center;gap:6px;
+    padding:8px 14px;border-radius:6px;border:1px solid var(--line);
+    background:var(--surface);color:var(--ink);
+    font:inherit;font-weight:500;cursor:pointer;
+    transition:all .12s;
+  }
+  .btn:hover{background:var(--bg)}
+  .btn-primary{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .btn-primary:hover{background:var(--ink-soft)}
+  .btn-accent{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .btn-accent:hover{filter:brightness(.95)}
+  .btn-ghost{background:transparent;border-color:transparent;color:var(--ink-soft)}
+  .btn-ghost:hover{background:var(--bg);color:var(--ink)}
+  .btn-danger{color:var(--danger);border-color:transparent;background:transparent}
+  .btn-danger:hover{background:#fce8e8}
+  .btn-sm{padding:5px 10px;font-size:12px}
+
+  input,select,textarea{
+    font:inherit;color:var(--ink);
+    padding:8px 12px;border:1px solid var(--line);border-radius:6px;
+    background:var(--surface);width:100%;
+    transition:border-color .12s,box-shadow .12s;
+    font-size:16px;
+    -webkit-appearance:none;appearance:none;
+  }
+  select{
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5l5 5 5-5' stroke='%238a9591' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 12px center;
+    padding-right:32px;
+  }
+  input:focus,select:focus,textarea:focus{
+    outline:0;border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-soft);
+  }
+  label{display:block;font-size:12px;color:var(--ink-soft);font-weight:500;margin-bottom:4px}
+
+  /* iOS / mobile tweaks */
+  @media (max-width: 900px){
+    body{font-size:15px}
+    .app{padding:0 14px}
+    header{padding:14px 0 12px}
+    .brand h1{font-size:20px}
+    nav{flex-wrap:wrap;width:100%;overflow-x:auto;-webkit-overflow-scrolling:touch}
+    nav button{padding:10px 14px;font-size:14px;flex-shrink:0}
+    .panel-header{padding:12px 14px}
+    .panel-body{padding:14px}
+    .btn{min-height:40px;padding:10px 14px}
+    .btn-sm{min-height:34px;padding:7px 12px;font-size:13px}
+    main{padding:14px 0 60px}
+    .form-row,.form-row.three{grid-template-columns:1fr;gap:10px}
+    .panel{border-radius:10px}
+    th,td{padding:8px 10px}
+    .line-row{grid-template-columns:1fr 60px 80px 80px 28px;gap:6px}
+    .line-row input{padding:8px 6px;font-size:15px}
+    .picker-item{padding:12px}
+    .picker{max-height:300px}
+  }
+
+  .table-wrap{overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th{
+    text-align:left;font-weight:600;color:var(--ink-soft);
+    font-size:11px;text-transform:uppercase;letter-spacing:.5px;
+    padding:10px 12px;border-bottom:1px solid var(--line);
+    background:var(--bg);
+  }
+  td{padding:12px;border-bottom:1px solid var(--line);vertical-align:middle}
+  tr:last-child td{border-bottom:0}
+  tr:hover td{background:#fafaf6}
+  .num{text-align:right;font-variant-numeric:tabular-nums}
+  .center{text-align:center}
+  .empty{padding:60px 20px;text-align:center;color:var(--muted)}
+  .empty svg{margin:0 auto 12px;display:block;opacity:.4}
+
+  .toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .search{position:relative;min-width:240px;flex:1}
+  .search input{padding-left:34px}
+  .search svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);opacity:.5}
+
+  .po-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:20px}
+  @media(max-width:900px){.po-grid{grid-template-columns:1fr}}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px}
+  .form-row.three{grid-template-columns:1fr 1fr 1fr}
+  .form-row.full{grid-template-columns:1fr}
+
+  .picker{max-height:380px;overflow-y:auto;border:1px solid var(--line);border-radius:8px}
+  .picker-item{
+    padding:10px 12px;border-bottom:1px solid var(--line);
+    display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;
+    cursor:pointer;transition:background .1s;
+  }
+  .picker-item:hover{background:var(--bg)}
+  .picker-item:last-child{border-bottom:0}
+  .picker-item .meta{font-size:11px;color:var(--muted);margin-top:2px}
+  .picker-item .article{font-family:"SF Mono",ui-monospace,monospace;color:var(--accent);font-weight:600;font-size:11px}
+
+  .line-row{
+    display:grid;grid-template-columns:1fr 80px 100px 100px 32px;gap:8px;align-items:center;
+    padding:10px 0;border-bottom:1px solid var(--line);
+  }
+  .line-row:last-child{border-bottom:0}
+  .line-row .name{font-weight:500}
+  .line-row .article{font-size:11px;color:var(--muted);font-family:"SF Mono",ui-monospace,monospace}
+  .line-row input{padding:6px 8px;font-size:13px;text-align:right}
+  .line-row .qty input{text-align:center}
+  .line-row .remove{background:transparent;border:0;cursor:pointer;color:var(--muted);padding:4px;border-radius:4px}
+  .line-row .remove:hover{background:#fce8e8;color:var(--danger)}
+
+  .totals{
+    margin-top:16px;padding-top:16px;border-top:2px solid var(--ink);
+    display:flex;flex-direction:column;gap:6px;align-items:flex-end;
+  }
+  .totals .row{display:flex;gap:24px;font-size:14px;min-width:240px;justify-content:space-between}
+  .totals .row.grand{font-size:18px;font-weight:600;font-family:"Bodoni Moda",Georgia,serif;margin-top:6px}
+
+  .badge{
+    display:inline-block;padding:2px 8px;border-radius:10px;
+    font-size:11px;font-weight:500;
+    background:var(--accent-soft);color:var(--accent);
+  }
+  .badge.draft{background:#e8e8e8;color:var(--ink-soft)}
+  .badge.sent{background:#dcebe2;color:var(--ok)}
+
+  .modal-bg{
+    position:fixed;inset:0;background:rgba(15,32,24,.5);
+    display:none;align-items:center;justify-content:center;z-index:100;
+    padding:20px;
+  }
+  .modal-bg.open{display:flex}
+  .modal{
+    background:var(--surface);border-radius:12px;
+    max-width:560px;width:100%;max-height:90vh;overflow-y:auto;
+    box-shadow:0 20px 60px rgba(0,0,0,.3);
+  }
+  .modal-header{padding:18px 20px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}
+  .modal-header h3{font-size:16px;font-weight:600}
+  .modal-body{padding:20px}
+  .modal-footer{padding:16px 20px;border-top:1px solid var(--line);display:flex;justify-content:flex-end;gap:8px}
+
+  .hidden{display:none !important}
+  .muted{color:var(--muted)}
+
+  .toast{
+    position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);
+    background:var(--ink);color:#fff;padding:10px 18px;border-radius:8px;
+    font-size:13px;z-index:200;transition:transform .25s;
+  }
+  .toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="app">
+
+<header>
+  <div class="brand">
+    <h1>Decor Master</h1>
+    <span>Purchase Orders</span>
+  </div>
+  <nav>
+    <button class="tab-btn active" data-tab="builder">Create PO</button>
+    <button class="tab-btn" data-tab="catalog">Catalog</button>
+    <button class="tab-btn" data-tab="history">PO History</button>
+    <button class="tab-btn" data-tab="settings">Settings</button>
+  </nav>
+</header>
+
+<main>
+
+<section id="tab-builder">
+  <div class="po-grid">
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2 id="po-title">New Order</h2>
+        <div style="display:flex;gap:6px">
+          <button class="btn btn-ghost btn-sm" id="po-new">Clear</button>
+          <button class="btn btn-sm" id="po-save">Save</button>
+          <button class="btn btn-primary btn-sm" id="po-export-pdf">PDF</button>
+          <button class="btn btn-accent btn-sm" id="po-export-xlsx">Excel</button>
+        </div>
+      </div>
+      <div class="panel-body">
+
+        <div class="form-row three">
+          <div>
+            <label>PO Number</label>
+            <input id="po-number" placeholder="PO-2026-001">
+          </div>
+          <div>
+            <label>Date</label>
+            <input id="po-date" type="date">
+          </div>
+          <div>
+            <label>Currency</label>
+            <select id="po-currency">
+              <option value="USD">USD</option>
+              <option value="AED">AED</option>
+              <option value="CNY">CNY</option>
+              <option value="EUR">EUR</option>
+              <option value="TMT">TMT</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div>
+            <label>Supplier</label>
+            <input id="po-supplier" placeholder="Supplier name" list="supplier-list">
+            <datalist id="supplier-list"></datalist>
+          </div>
+          <div>
+            <label>Contact / Phone</label>
+            <input id="po-contact" placeholder="Contact">
+          </div>
+        </div>
+
+        <div class="form-row full">
+          <div>
+            <label>Notes</label>
+            <textarea id="po-note" rows="2" placeholder="Delivery terms, payment terms..."></textarea>
+          </div>
+        </div>
+
+        <div style="margin-top:20px">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+            <strong style="font-size:13px;color:var(--ink-soft)">Order Items</strong>
+            <span class="muted" style="font-size:12px" id="lines-count">0 items</span>
+          </div>
+          <div id="lines-container"></div>
+          <div id="lines-empty" class="empty" style="padding:30px 0">
+            Select products from the catalog on the right →
+          </div>
+
+          <div class="totals" id="po-totals" style="display:none">
+            <div class="row">
+              <span class="muted">Items:</span>
+              <span id="t-count">0</span>
+            </div>
+            <div class="row">
+              <span class="muted">Total units:</span>
+              <span id="t-units">0</span>
+            </div>
+            <div class="row grand">
+              <span>TOTAL:</span>
+              <span><span id="t-amount">0.00</span> <span id="t-curr">USD</span></span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2>Products</h2>
+        <button class="btn btn-sm" id="quick-add">+ Quick Add</button>
+      </div>
+      <div class="panel-body">
+        <div class="search" style="margin-bottom:12px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="picker-search" placeholder="Search by SKU or name...">
+        </div>
+        <div class="picker" id="picker-list"></div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<section id="tab-catalog" class="hidden">
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Product Catalog</h2>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm" id="import-xlsx-btn">Import Excel</button>
+        <input type="file" id="import-xlsx" accept=".xlsx,.xls,.csv" style="display:none">
+        <button class="btn btn-sm" id="export-catalog-xlsx">Export Excel</button>
+        <button class="btn btn-primary btn-sm" id="add-product-btn">+ Add Product</button>
+      </div>
+    </div>
+    <div class="panel-body">
+      <div class="toolbar" style="margin-bottom:14px">
+        <div class="search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input id="catalog-search" placeholder="Search...">
+        </div>
+        <select id="catalog-filter-cat" style="max-width:200px">
+          <option value="">All categories</option>
+        </select>
+      </div>
+      <div class="table-wrap">
+        <table id="catalog-table">
+          <thead>
+            <tr>
+              <th>SKU</th>
+              <th>Name</th>
+              <th>Category</th>
+              <th>Unit</th>
+              <th class="num">Price</th>
+              <th>Supplier</th>
+              <th class="center">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="catalog-tbody"></tbody>
+        </table>
+      </div>
+      <div id="catalog-empty" class="empty hidden">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <rect x="3" y="3" width="18" height="18" rx="2"/>
+          <path d="M3 9h18M9 21V9"/>
+        </svg>
+        <p>Catalog is empty. Add your first product.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tab-history" class="hidden">
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Order History</h2>
+      <span class="muted" id="history-count" style="font-size:12px"></span>
+    </div>
+    <div class="panel-body">
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Number</th>
+              <th>Date</th>
+              <th>Supplier</th>
+              <th class="num">Items</th>
+              <th class="num">Total</th>
+              <th class="center">Status</th>
+              <th class="center">Actions</th>
+            </tr>
+          </thead>
+          <tbody id="history-tbody"></tbody>
+        </table>
+      </div>
+      <div id="history-empty" class="empty hidden">
+        <p>No saved orders yet.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="tab-settings" class="hidden">
+  <div class="panel">
+    <div class="panel-header"><h2>Company Settings</h2></div>
+    <div class="panel-body">
+      <div class="form-row">
+        <div>
+          <label>Company Name</label>
+          <input id="set-company" placeholder="Decor Master">
+        </div>
+        <div>
+          <label>Phone</label>
+          <input id="set-phone">
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>Email</label>
+          <input id="set-email">
+        </div>
+        <div>
+          <label>Address</label>
+          <input id="set-address">
+        </div>
+      </div>
+      <div class="form-row full">
+        <div>
+          <label>PO Counter (next PO number will use this)</label>
+          <input id="set-counter" type="number" min="1">
+        </div>
+      </div>
+      <button class="btn btn-primary" id="save-settings" style="margin-top:8px">Save Settings</button>
+
+      <hr style="margin:24px 0;border:0;border-top:1px solid var(--line)">
+
+      <h3 style="font-size:14px;margin-bottom:12px">Data</h3>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn btn-sm" id="export-all">Download Backup (JSON)</button>
+        <button class="btn btn-sm" id="import-all-btn">Restore from Backup</button>
+        <input type="file" id="import-all" accept=".json" style="display:none">
+        <button class="btn btn-sm btn-danger" id="clear-all">Delete All Data</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+</div>
+
+<div class="modal-bg" id="product-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <h3 id="product-modal-title">New Product</h3>
+      <button class="btn btn-ghost btn-sm" data-close-modal>&times;</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div>
+          <label>SKU *</label>
+          <input id="p-article" placeholder="SKU-001">
+        </div>
+        <div>
+          <label>Unit</label>
+          <select id="p-unit">
+            <option value="pcs">pcs</option>
+            <option value="m">m</option>
+            <option value="m²">m²</option>
+            <option value="kg">kg</option>
+            <option value="box">box</option>
+            <option value="pack">pack</option>
+            <option value="set">set</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row full">
+        <div>
+          <label>Name *</label>
+          <input id="p-name" placeholder="Product name">
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>Category</label>
+          <input id="p-category" placeholder="Profiles / Hardware..." list="cat-list">
+          <datalist id="cat-list"></datalist>
+        </div>
+        <div>
+          <label>Purchase Price</label>
+          <input id="p-price" type="number" step="0.01" min="0" placeholder="0">
+        </div>
+      </div>
+      <div class="form-row">
+        <div>
+          <label>Supplier</label>
+          <input id="p-supplier" list="supplier-list-2">
+          <datalist id="supplier-list-2"></datalist>
+        </div>
+        <div>
+          <label>Photo URL</label>
+          <input id="p-photo" placeholder="https://...">
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-close-modal>Cancel</button>
+      <button class="btn btn-primary" id="save-product">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+<div id="diag-status" style="position:fixed;bottom:60px;right:10px;z-index:9998;background:#0F2018;color:#fff;padding:6px 10px;border-radius:6px;font-size:11px;font-family:monospace;cursor:pointer;display:none">⚙️ Diag</div>
+
+<script>
+// === ERROR HANDLER FIRST — must be before anything else ===
+window.__errors = [];
+function showError(msg, src){
+  try{
+    window.__errors.push({msg, src, time: new Date().toISOString()});
+    var bar = document.getElementById('error-bar');
+    if(!bar){
+      bar = document.createElement('div');
+      bar.id = 'error-bar';
+      bar.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#a83232;color:#fff;padding:8px 12px;z-index:99999;font-size:11px;font-family:monospace;line-height:1.4;max-height:50vh;overflow-y:auto;-webkit-overflow-scrolling:touch';
+      bar.onclick = function(){ this.remove(); };
+      document.body.appendChild(bar);
+    }
+    bar.innerHTML += '<div style="border-top:1px solid rgba(255,255,255,.2);padding-top:4px;margin-top:4px">⚠ ' + (msg||'?') + (src ? ' [' + src + ']' : '') + '</div>';
+    bar.firstChild && (bar.firstChild.innerHTML = '<b>JS ERRORS — tap to close</b>');
+  }catch(_){}
+}
+window.addEventListener('error', function(e){
+  showError(e.message, ((e.filename||'').split('/').pop()) + ':' + (e.lineno||'?'));
+});
+window.addEventListener('unhandledrejection', function(e){
+  showError('Promise: ' + (e.reason && e.reason.message ? e.reason.message : e.reason), 'async');
+});
+
+// Show diagnostics on long press of footer area
+window.addEventListener('load', function(){
+  var d = document.getElementById('diag-status');
+  if(!d) return;
+  d.style.display = 'block';
+  d.onclick = function(){
+    var libs = window.LIBS || {};
+    var info = [
+      'UA: ' + navigator.userAgent.substring(0,100),
+      'Libs: jspdf=' + libs.jspdf + ', autotable=' + libs.jspdf_autotable + ', xlsx=' + libs.xlsx + ', exceljs=' + libs.exceljs + ', filesaver=' + libs.filesaver,
+      'localStorage: ' + (typeof localStorage !== 'undefined' ? 'OK' : 'MISSING'),
+      'Products: ' + (window.state ? window.state.products.length : 'state not init'),
+      'Errors caught: ' + (window.__errors||[]).length,
+      window.__errors.length ? 'Last error: ' + window.__errors[window.__errors.length-1].msg : ''
+    ].filter(Boolean).join('\n\n');
+    alert(info);
+  };
+});
+</script>
+
+<script>
+const STORE_KEY = 'decormaster_po_v1';
+const state = {
+  products: [],
+  orders: [],
+  currentPO: null,
+  settings: {
+    company: 'Decor Master',
+    phone: '',
+    email: '',
+    address: '',
+    counter: 1
+  },
+  editingProductId: null
+};
+window.state = state;
+
+function load(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(raw){
+      const data = JSON.parse(raw);
+      state.products = data.products || [];
+      state.orders = data.orders || [];
+      state.settings = Object.assign(state.settings, data.settings || {});
+    }
+  }catch(e){console.error('Load error',e)}
+}
+function save(){
+  localStorage.setItem(STORE_KEY, JSON.stringify({
+    products: state.products,
+    orders: state.orders,
+    settings: state.settings
+  }));
+}
+
+function uid(){return Date.now().toString(36) + Math.random().toString(36).slice(2,7)}
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.dataset.tab;
+    ['builder','catalog','history','settings'].forEach(t=>{
+      document.getElementById('tab-'+t).classList.toggle('hidden', t !== tab);
+    });
+    if(tab==='catalog') renderCatalog();
+    if(tab==='history') renderHistory();
+    if(tab==='settings') fillSettings();
+  });
+});
+
+function newPO(){
+  state.currentPO = {
+    id: null,
+    number: 'PO-' + new Date().getFullYear() + '-' + String(state.settings.counter).padStart(3,'0'),
+    date: new Date().toISOString().slice(0,10),
+    currency: 'USD',
+    supplier: '',
+    contact: '',
+    note: '',
+    lines: [],
+    status: 'draft'
+  };
+  fillBuilder();
+}
+
+function fillBuilder(){
+  const po = state.currentPO;
+  document.getElementById('po-number').value = po.number;
+  document.getElementById('po-date').value = po.date;
+  document.getElementById('po-currency').value = po.currency;
+  document.getElementById('po-supplier').value = po.supplier;
+  document.getElementById('po-contact').value = po.contact;
+  document.getElementById('po-note').value = po.note;
+  document.getElementById('po-title').textContent = po.id ? ('Order ' + po.number) : 'New Order';
+  renderLines();
+  renderPicker();
+  refreshSupplierLists();
+}
+
+function renderPicker(){
+  const q = document.getElementById('picker-search').value.toLowerCase().trim();
+  const list = document.getElementById('picker-list');
+  let items = state.products;
+  if(q){
+    items = items.filter(p =>
+      (p.article||'').toLowerCase().includes(q) ||
+      (p.name||'').toLowerCase().includes(q) ||
+      (p.category||'').toLowerCase().includes(q)
+    );
+  }
+  if(items.length === 0){
+    list.innerHTML = '<div class="empty" style="padding:30px 10px">' +
+      (state.products.length === 0 ? 'No products yet. Add them in the <b>Catalog</b> tab.' : 'Nothing found') +
+      '</div>';
+    return;
+  }
+  list.innerHTML = items.slice(0,200).map(p => `
+    <div class="picker-item" data-id="${p.id}">
+      <div>
+        <div><span class="article">${escapeHtml(p.article)}</span></div>
+        <div style="font-weight:500;margin-top:2px">${escapeHtml(p.name)}</div>
+        <div class="meta">${escapeHtml(p.category||'-')} · ${p.unit||'pcs'}${p.price?' · '+formatNum(p.price)+' '+state.currentPO.currency:''}</div>
+      </div>
+      <button class="btn btn-sm btn-primary">+</button>
+    </div>
+  `).join('');
+  list.querySelectorAll('.picker-item').forEach(el=>{
+    el.addEventListener('click', ()=>addLine(el.dataset.id));
+  });
+}
+
+function addLine(productId){
+  const p = state.products.find(x => x.id === productId);
+  if(!p) return;
+  const existing = state.currentPO.lines.find(l => l.productId === productId);
+  if(existing){
+    existing.qty = Number(existing.qty) + 1;
+  }else{
+    state.currentPO.lines.push({
+      id: uid(),
+      productId: p.id,
+      article: p.article,
+      name: p.name,
+      unit: p.unit || 'pcs',
+      qty: 1,
+      price: Number(p.price) || 0
+    });
+  }
+  renderLines();
+}
+
+function renderLines(){
+  const cont = document.getElementById('lines-container');
+  const empty = document.getElementById('lines-empty');
+  const totals = document.getElementById('po-totals');
+  const lines = state.currentPO.lines;
+
+  if(lines.length === 0){
+    cont.innerHTML = '';
+    empty.style.display = 'block';
+    totals.style.display = 'none';
+    document.getElementById('lines-count').textContent = '0 items';
+    return;
+  }
+
+  empty.style.display = 'none';
+  totals.style.display = 'flex';
+
+  cont.innerHTML = `
+    <div class="line-row" style="font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid var(--line)">
+      <div>Product</div>
+      <div style="text-align:center">Qty</div>
+      <div style="text-align:right">Price</div>
+      <div style="text-align:right">Amount</div>
+      <div></div>
+    </div>
+  ` + lines.map((l,i) => `
+    <div class="line-row">
+      <div>
+        <div class="name">${escapeHtml(l.name)}</div>
+        <div class="article">${escapeHtml(l.article)} · ${l.unit}</div>
+      </div>
+      <div class="qty"><input type="number" min="0" step="0.001" data-i="${i}" data-f="qty" value="${l.qty}"></div>
+      <div><input type="number" min="0" step="0.01" data-i="${i}" data-f="price" value="${l.price}"></div>
+      <div style="text-align:right;font-variant-numeric:tabular-nums;font-weight:500">${formatNum(l.qty * l.price)}</div>
+      <button class="remove" data-rm="${i}" title="Remove">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+      </button>
+    </div>
+  `).join('');
+
+  cont.querySelectorAll('input[data-i]').forEach(inp=>{
+    inp.addEventListener('input', e=>{
+      const i = +e.target.dataset.i;
+      const f = e.target.dataset.f;
+      state.currentPO.lines[i][f] = Number(e.target.value) || 0;
+      updateTotals();
+      const row = e.target.closest('.line-row');
+      const sumCell = row.children[3];
+      const ln = state.currentPO.lines[i];
+      sumCell.textContent = formatNum(ln.qty * ln.price);
+    });
+  });
+  cont.querySelectorAll('[data-rm]').forEach(btn=>{
+    btn.addEventListener('click', e=>{
+      const i = +e.currentTarget.dataset.rm;
+      state.currentPO.lines.splice(i,1);
+      renderLines();
+    });
+  });
+
+  updateTotals();
+}
+
+function updateTotals(){
+  const lines = state.currentPO.lines;
+  const total = lines.reduce((s,l)=>s + (Number(l.qty)||0)*(Number(l.price)||0), 0);
+  const units = lines.reduce((s,l)=>s + (Number(l.qty)||0), 0);
+  document.getElementById('t-count').textContent = lines.length;
+  document.getElementById('t-units').textContent = formatNum(units);
+  document.getElementById('t-amount').textContent = formatNum(total);
+  document.getElementById('t-curr').textContent = state.currentPO.currency;
+  document.getElementById('lines-count').textContent = lines.length + ' items';
+}
+
+['po-number','po-date','po-currency','po-supplier','po-contact','po-note'].forEach(id=>{
+  document.getElementById(id).addEventListener('input', e=>{
+    const key = id.replace('po-','');
+    state.currentPO[key] = e.target.value;
+    if(key === 'currency') updateTotals();
+  });
+});
+
+document.getElementById('picker-search').addEventListener('input', renderPicker);
+
+document.getElementById('po-new').addEventListener('click', ()=>{
+  if(state.currentPO.lines.length > 0 && !confirm('Clear current order?')) return;
+  newPO();
+});
+
+document.getElementById('po-save').addEventListener('click', ()=>{
+  const po = state.currentPO;
+  if(po.lines.length === 0){ toast('Add at least one item'); return; }
+  if(!po.supplier.trim()){ toast('Please specify supplier'); return; }
+
+  if(po.id){
+    const idx = state.orders.findIndex(o => o.id === po.id);
+    if(idx >= 0) state.orders[idx] = JSON.parse(JSON.stringify(po));
+  }else{
+    po.id = uid();
+    state.orders.unshift(JSON.parse(JSON.stringify(po)));
+    state.settings.counter = (Number(state.settings.counter)||1) + 1;
+  }
+  save();
+  toast('Order saved');
+  document.getElementById('po-title').textContent = 'Order ' + po.number;
+});
+
+document.getElementById('po-export-pdf').addEventListener('click', ()=>exportPDF(state.currentPO));
+document.getElementById('po-export-xlsx').addEventListener('click', ()=>exportXLSX(state.currentPO));
+
+document.getElementById('quick-add').addEventListener('click', ()=>openProductModal());
+
+function renderCatalog(){
+  const q = document.getElementById('catalog-search').value.toLowerCase().trim();
+  const cat = document.getElementById('catalog-filter-cat').value;
+
+  const cats = [...new Set(state.products.map(p=>p.category).filter(Boolean))].sort();
+  const catSel = document.getElementById('catalog-filter-cat');
+  const cur = catSel.value;
+  catSel.innerHTML = '<option value="">All categories</option>' + cats.map(c=>`<option value="${escapeHtml(c)}">${escapeHtml(c)}</option>`).join('');
+  catSel.value = cur;
+
+  let items = state.products;
+  if(q) items = items.filter(p => (p.article+p.name+(p.category||'')+(p.supplier||'')).toLowerCase().includes(q));
+  if(cat) items = items.filter(p => p.category === cat);
+
+  const tbody = document.getElementById('catalog-tbody');
+  const empty = document.getElementById('catalog-empty');
+  const table = document.getElementById('catalog-table');
+
+  if(state.products.length === 0){
+    table.style.display = 'none';
+    empty.classList.remove('hidden');
+    return;
+  }
+  table.style.display = '';
+  empty.classList.add('hidden');
+
+  tbody.innerHTML = items.map(p => `
+    <tr>
+      <td><span style="font-family:'SF Mono',ui-monospace,monospace;font-size:12px;color:var(--accent);font-weight:600">${escapeHtml(p.article)}</span></td>
+      <td><strong>${escapeHtml(p.name)}</strong></td>
+      <td>${escapeHtml(p.category||'-')}</td>
+      <td>${p.unit||'pcs'}</td>
+      <td class="num">${p.price ? formatNum(p.price) : '-'}</td>
+      <td>${escapeHtml(p.supplier||'-')}</td>
+      <td class="center">
+        <button class="btn btn-ghost btn-sm" data-edit="${p.id}">Edit</button>
+        <button class="btn btn-danger btn-sm" data-del="${p.id}">Delete</button>
+      </td>
+    </tr>
+  `).join('');
+
+  tbody.querySelectorAll('[data-edit]').forEach(b=>b.addEventListener('click',e=>openProductModal(e.target.dataset.edit)));
+  tbody.querySelectorAll('[data-del]').forEach(b=>b.addEventListener('click',e=>{
+    if(confirm('Delete this product?')){
+      state.products = state.products.filter(x => x.id !== e.target.dataset.del);
+      save();
+      renderCatalog();
+      renderPicker();
+    }
+  }));
+}
+
+document.getElementById('catalog-search').addEventListener('input', renderCatalog);
+document.getElementById('catalog-filter-cat').addEventListener('change', renderCatalog);
+document.getElementById('add-product-btn').addEventListener('click', ()=>openProductModal());
+
+function openProductModal(id){
+  state.editingProductId = id || null;
+  refreshSupplierLists();
+  refreshCategoryList();
+  const p = id ? state.products.find(x=>x.id===id) : null;
+  document.getElementById('product-modal-title').textContent = p ? 'Edit Product' : 'New Product';
+  document.getElementById('p-article').value = (p && p.article) || '';
+  document.getElementById('p-name').value = (p && p.name) || '';
+  document.getElementById('p-category').value = (p && p.category) || '';
+  document.getElementById('p-unit').value = (p && p.unit) || 'pcs';
+  document.getElementById('p-price').value = (p && p.price) || '';
+  document.getElementById('p-supplier').value = (p && p.supplier) || '';
+  document.getElementById('p-photo').value = (p && p.photo) || '';
+  document.getElementById('product-modal').classList.add('open');
+  setTimeout(()=>document.getElementById('p-article').focus(), 50);
+}
+
+document.querySelectorAll('[data-close-modal]').forEach(b=>b.addEventListener('click',()=>{
+  document.getElementById('product-modal').classList.remove('open');
+}));
+document.getElementById('product-modal').addEventListener('click',e=>{
+  if(e.target.id==='product-modal') document.getElementById('product-modal').classList.remove('open');
+});
+
+document.getElementById('save-product').addEventListener('click', ()=>{
+  const article = document.getElementById('p-article').value.trim();
+  const name = document.getElementById('p-name').value.trim();
+  if(!article || !name){ toast('SKU and Name are required'); return; }
+
+  const dup = state.products.find(p => p.article.toLowerCase() === article.toLowerCase() && p.id !== state.editingProductId);
+  if(dup){ toast('SKU "'+article+'" already exists'); return; }
+
+  const data = {
+    article,
+    name,
+    category: document.getElementById('p-category').value.trim(),
+    unit: document.getElementById('p-unit').value,
+    price: Number(document.getElementById('p-price').value) || 0,
+    supplier: document.getElementById('p-supplier').value.trim(),
+    photo: document.getElementById('p-photo').value.trim()
+  };
+
+  if(state.editingProductId){
+    const idx = state.products.findIndex(p=>p.id===state.editingProductId);
+    state.products[idx] = Object.assign(state.products[idx], data);
+  }else{
+    state.products.push(Object.assign({id: uid()}, data));
+  }
+  save();
+  document.getElementById('product-modal').classList.remove('open');
+  renderCatalog();
+  renderPicker();
+  toast(state.editingProductId ? 'Product updated' : 'Product added');
+});
+
+function refreshSupplierLists(){
+  const sups = [...new Set(state.products.map(p=>p.supplier).filter(Boolean))].sort();
+  const html = sups.map(s=>`<option value="${escapeHtml(s)}">`).join('');
+  document.getElementById('supplier-list').innerHTML = html;
+  document.getElementById('supplier-list-2').innerHTML = html;
+}
+function refreshCategoryList(){
+  const cats = [...new Set(state.products.map(p=>p.category).filter(Boolean))].sort();
+  document.getElementById('cat-list').innerHTML = cats.map(c=>`<option value="${escapeHtml(c)}">`).join('');
+}
+
+function renderHistory(){
+  const tbody = document.getElementById('history-tbody');
+  const empty = document.getElementById('history-empty');
+  document.getElementById('history-count').textContent = state.orders.length + ' orders';
+
+  if(state.orders.length === 0){
+    tbody.innerHTML = '';
+    empty.classList.remove('hidden');
+    return;
+  }
+  empty.classList.add('hidden');
+  tbody.innerHTML = state.orders.map(po => {
+    const total = po.lines.reduce((s,l)=>s + (Number(l.qty)||0)*(Number(l.price)||0), 0);
+    return `
+      <tr>
+        <td><strong>${escapeHtml(po.number)}</strong></td>
+        <td>${escapeHtml(po.date)}</td>
+        <td>${escapeHtml(po.supplier)}</td>
+        <td class="num">${po.lines.length}</td>
+        <td class="num">${formatNum(total)} ${po.currency}</td>
+        <td class="center"><span class="badge ${po.status||'draft'}">${po.status==='sent'?'Sent':'Draft'}</span></td>
+        <td class="center">
+          <button class="btn btn-ghost btn-sm" data-open="${po.id}">Open</button>
+          <button class="btn btn-ghost btn-sm" data-pdf="${po.id}">PDF</button>
+          <button class="btn btn-danger btn-sm" data-del-po="${po.id}">Delete</button>
+        </td>
+      </tr>
+    `;
+  }).join('');
+
+  tbody.querySelectorAll('[data-open]').forEach(b=>b.addEventListener('click',e=>{
+    const po = state.orders.find(o => o.id === e.target.dataset.open);
+    state.currentPO = JSON.parse(JSON.stringify(po));
+    fillBuilder();
+    document.querySelector('[data-tab="builder"]').click();
+  }));
+  tbody.querySelectorAll('[data-pdf]').forEach(b=>b.addEventListener('click',e=>{
+    const po = state.orders.find(o => o.id === e.target.dataset.pdf);
+    exportPDF(po);
+  }));
+  tbody.querySelectorAll('[data-del-po]').forEach(b=>b.addEventListener('click',e=>{
+    if(confirm('Delete this order?')){
+      state.orders = state.orders.filter(o => o.id !== e.target.dataset.delPo);
+      save();
+      renderHistory();
+    }
+  }));
+}
+
+function fillSettings(){
+  document.getElementById('set-company').value = state.settings.company || '';
+  document.getElementById('set-phone').value = state.settings.phone || '';
+  document.getElementById('set-email').value = state.settings.email || '';
+  document.getElementById('set-address').value = state.settings.address || '';
+  document.getElementById('set-counter').value = state.settings.counter || 1;
+}
+document.getElementById('save-settings').addEventListener('click', ()=>{
+  state.settings.company = document.getElementById('set-company').value;
+  state.settings.phone = document.getElementById('set-phone').value;
+  state.settings.email = document.getElementById('set-email').value;
+  state.settings.address = document.getElementById('set-address').value;
+  state.settings.counter = Number(document.getElementById('set-counter').value) || 1;
+  save();
+  toast('Settings saved');
+});
+
+document.getElementById('export-all').addEventListener('click', ()=>{
+  const blob = new Blob([JSON.stringify({
+    products: state.products,
+    orders: state.orders,
+    settings: state.settings,
+    exported: new Date().toISOString()
+  }, null, 2)], {type:'application/json'});
+  download(blob, 'decormaster-po-backup-' + new Date().toISOString().slice(0,10) + '.json');
+});
+document.getElementById('import-all-btn').addEventListener('click', ()=>document.getElementById('import-all').click());
+document.getElementById('import-all').addEventListener('change', e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = ()=>{
+    try{
+      const data = JSON.parse(r.result);
+      if(!confirm('Restore data? Current data will be replaced.')) return;
+      state.products = data.products || [];
+      state.orders = data.orders || [];
+      state.settings = Object.assign(state.settings, data.settings || {});
+      save();
+      newPO();
+      renderCatalog();
+      toast('Data restored');
+    }catch(err){ alert('File read error: '+err.message); }
+  };
+  r.readAsText(f);
+  e.target.value = '';
+});
+document.getElementById('clear-all').addEventListener('click', ()=>{
+  if(confirm('DELETE ALL data (products, orders, settings)? This cannot be undone.')){
+    if(confirm('Are you sure?')){
+      localStorage.removeItem(STORE_KEY);
+      location.reload();
+    }
+  }
+});
+
+document.getElementById('export-catalog-xlsx').addEventListener('click', ()=>{
+  if(state.products.length === 0){ toast('Catalog is empty'); return; }
+  const ws = XLSX.utils.json_to_sheet(state.products.map(p => ({
+    SKU: p.article,
+    Name: p.name,
+    Category: p.category||'',
+    Unit: p.unit||'pcs',
+    Price: p.price||0,
+    Supplier: p.supplier||''
+  })));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Catalog');
+  XLSX.writeFile(wb, 'decormaster-catalog-' + new Date().toISOString().slice(0,10) + '.xlsx');
+});
+
+document.getElementById('import-xlsx-btn').addEventListener('click', ()=>document.getElementById('import-xlsx').click());
+document.getElementById('import-xlsx').addEventListener('change', e=>{
+  const f = e.target.files[0]; if(!f) return;
+  if(typeof XLSX === 'undefined'){
+    alert('Excel library did not load. Please check your internet connection and reload the page.');
+    e.target.value = '';
+    return;
+  }
+  const r = new FileReader();
+  r.onload = ev=>{
+    try{
+      const wb = XLSX.read(ev.target.result, {type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, {defval: ''});
+      if(rows.length === 0){ alert('No data found in the file.'); return; }
+
+      // Build a normalized lookup of column names from the first row
+      // Maps possible header variants -> our internal field name
+      const headerMap = {
+        article: ['sku','article','code','№','no','number','артикул','код'],
+        name:    ['name','product','product name','description','наименование','название','товар'],
+        category:['category','group','категория','группа'],
+        unit:    ['unit','units','uom','ед','ед.','единица'],
+        price:   ['price','cost','стоимость','цена'],
+        supplier:['supplier','vendor','поставщик']
+      };
+      const norm = s => String(s||'').toLowerCase().replace(/\s+/g,' ').trim();
+      const cols = {};
+      const sampleKeys = Object.keys(rows[0]);
+      Object.entries(headerMap).forEach(([field, variants])=>{
+        for(const k of sampleKeys){
+          if(variants.includes(norm(k))){ cols[field] = k; break; }
+        }
+      });
+
+      if(!cols.article || !cols.name){
+        alert('Could not find SKU/Article and Name columns.\n\nFound columns: ' + sampleKeys.join(', ') +
+              '\n\nExpected at minimum: a column for SKU (e.g. "SKU", "№", "Code", "Article") and Name (e.g. "Name", "Product Name", "Description").');
+        return;
+      }
+
+      let added = 0, skipped = 0;
+      rows.forEach(row=>{
+        const article = String(row[cols.article] || '').trim();
+        const name = String(row[cols.name] || '').trim();
+        if(!article || !name){ skipped++; return; }
+        if(state.products.find(p => p.article.toLowerCase() === article.toLowerCase())){ skipped++; return; }
+        const unitRaw = cols.unit ? String(row[cols.unit] || '').trim() : '';
+        state.products.push({
+          id: uid(),
+          article,
+          name,
+          category: cols.category ? String(row[cols.category] || '').trim() : '',
+          unit: unitRaw ? unitRaw.toLowerCase() : 'pcs',
+          price: cols.price ? (Number(row[cols.price]) || 0) : 0,
+          supplier: cols.supplier ? String(row[cols.supplier] || '').trim() : ''
+        });
+        added++;
+      });
+      save();
+      renderCatalog();
+      renderPicker();
+      toast('Added: '+added+' / Skipped: '+skipped);
+    }catch(err){ alert('Error: '+err.message); }
+  };
+  r.readAsArrayBuffer(f);
+  e.target.value = '';
+});
+
+function exportPDF(po){
+  if(!po || po.lines.length === 0){ toast('No items to export'); return; }
+  if(!window.jspdf || !window.LIBS.jspdf){
+    alert('PDF library did not load. Please check your internet connection and reload the page.');
+    return;
+  }
+
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF('p','mm','a4');
+  const W = doc.internal.pageSize.getWidth();
+  const M = 15;
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(22);
+  doc.setTextColor(15,32,24);
+  doc.text(state.settings.company || 'Decor Master', M, 20);
+
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(100,100,100);
+  let y = 26;
+  if(state.settings.address) { doc.text(state.settings.address, M, y); y += 4; }
+  if(state.settings.phone) { doc.text('Tel: ' + state.settings.phone, M, y); y += 4; }
+  if(state.settings.email) { doc.text('Email: ' + state.settings.email, M, y); y += 4; }
+
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(20);
+  doc.setTextColor(176,120,32);
+  doc.text('PURCHASE ORDER', W - M, 20, {align:'right'});
+  doc.setFontSize(11);
+  doc.setTextColor(15,32,24);
+  doc.text(po.number, W - M, 27, {align:'right'});
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  doc.setTextColor(100,100,100);
+  doc.text('Date: ' + po.date, W - M, 33, {align:'right'});
+
+  doc.setDrawColor(176,120,32);
+  doc.setLineWidth(0.5);
+  doc.line(M, 45, W - M, 45);
+
+  doc.setFontSize(8);
+  doc.setTextColor(150,150,150);
+  doc.text('SUPPLIER', M, 52);
+  doc.setFontSize(11);
+  doc.setTextColor(15,32,24);
+  doc.setFont('helvetica','bold');
+  doc.text(po.supplier || '-', M, 58);
+  doc.setFont('helvetica','normal');
+  doc.setFontSize(9);
+  if(po.contact) doc.text(po.contact, M, 64);
+
+  const total = po.lines.reduce((s,l)=>s + (Number(l.qty)||0)*(Number(l.price)||0), 0);
+  const rows = po.lines.map((l,i)=>[
+    i+1,
+    l.article,
+    l.name,
+    l.unit,
+    formatNum(l.qty),
+    formatNum(l.price),
+    formatNum(l.qty * l.price)
+  ]);
+
+  doc.autoTable({
+    startY: 72,
+    head: [['#','SKU','Name','Unit','Qty','Price','Amount']],
+    body: rows,
+    theme: 'plain',
+    headStyles: {
+      fillColor: [15,32,24],
+      textColor: [255,255,255],
+      fontSize: 9,
+      fontStyle: 'bold',
+      halign: 'left'
+    },
+    bodyStyles: { fontSize: 9, textColor: [15,32,24] },
+    columnStyles: {
+      0: {cellWidth: 10, halign: 'center'},
+      1: {cellWidth: 28, fontStyle: 'bold'},
+      2: {cellWidth: 'auto'},
+      3: {cellWidth: 14, halign: 'center'},
+      4: {cellWidth: 22, halign: 'right'},
+      5: {cellWidth: 22, halign: 'right'},
+      6: {cellWidth: 26, halign: 'right', fontStyle: 'bold'}
+    },
+    alternateRowStyles: { fillColor: [250,250,246] },
+    margin: { left: M, right: M }
+  });
+
+  let endY = doc.lastAutoTable.finalY + 8;
+
+  doc.setDrawColor(15,32,24);
+  doc.setLineWidth(0.8);
+  doc.line(W - M - 70, endY, W - M, endY);
+  doc.setFont('helvetica','bold');
+  doc.setFontSize(11);
+  doc.setTextColor(15,32,24);
+  doc.text('TOTAL:', W - M - 70, endY + 7);
+  doc.setFontSize(13);
+  doc.setTextColor(176,120,32);
+  doc.text(formatNum(total) + ' ' + po.currency, W - M, endY + 7, {align:'right'});
+
+  if(po.note){
+    endY += 18;
+    doc.setFontSize(8);
+    doc.setTextColor(150,150,150);
+    doc.setFont('helvetica','normal');
+    doc.text('NOTES', M, endY);
+    doc.setFontSize(9);
+    doc.setTextColor(15,32,24);
+    const split = doc.splitTextToSize(po.note, W - M*2);
+    doc.text(split, M, endY + 5);
+  }
+
+  const ph = doc.internal.pageSize.getHeight();
+  doc.setFontSize(8);
+  doc.setTextColor(150,150,150);
+  doc.text((state.settings.company || 'Decor Master') + ' · ' + new Date().toLocaleString('en-US'),
+    W/2, ph - 8, {align:'center'});
+
+  // Direct download — works reliably on iOS Safari and desktop
+  doc.save(po.number + '.pdf');
+  toast('PDF ready');
+}
+
+async function exportXLSX(po){
+  if(!po || po.lines.length === 0){ toast('No items to export'); return; }
+  if(typeof ExcelJS === 'undefined' || typeof saveAs === 'undefined'){
+    alert('Excel library did not load. Please check your internet connection and reload the page.');
+    return;
+  }
+
+  const total = po.lines.reduce((s,l)=>s + (Number(l.qty)||0)*(Number(l.price)||0), 0);
+  const totalUnits = po.lines.reduce((s,l)=>s + (Number(l.qty)||0), 0);
+
+  const wb = new ExcelJS.Workbook();
+  wb.creator = state.settings.company || 'Decor Master';
+  wb.created = new Date();
+  const ws = wb.addWorksheet('PO', {
+    pageSetup: { paperSize: 9, orientation: 'portrait', fitToPage: true, fitToWidth: 1, fitToHeight: 0, margins: { left: 0.5, right: 0.5, top: 0.5, bottom: 0.5, header: 0.3, footer: 0.3 } }
+  });
+
+  // Column widths (7 columns: A-G)
+  ws.columns = [
+    { width: 6 },   // A: #
+    { width: 16 },  // B: SKU
+    { width: 38 },  // C: Name
+    { width: 9 },   // D: Unit
+    { width: 12 },  // E: Qty
+    { width: 14 },  // F: Price
+    { width: 16 }   // G: Amount
+  ];
+
+  // Style helpers
+  const INK = 'FF0F2018';
+  const ACCENT = 'FFB07820';
+  const SOFT_BG = 'FFF5F3EE';
+  const LIGHT_BG = 'FFFAFAF6';
+  const thinBorder = { style: 'thin', color: { argb: 'FFD0CCC0' } };
+  const borderAll = { top: thinBorder, left: thinBorder, bottom: thinBorder, right: thinBorder };
+
+  // ===== Row 1: Company name (large, gold) =====
+  ws.mergeCells('A1:E1');
+  const companyCell = ws.getCell('A1');
+  companyCell.value = state.settings.company || 'Decor Master';
+  companyCell.font = { name: 'Calibri', size: 22, bold: true, color: { argb: INK } };
+  companyCell.alignment = { vertical: 'middle', horizontal: 'left' };
+  ws.getRow(1).height = 32;
+
+  // Right-side: PURCHASE ORDER label
+  ws.mergeCells('F1:G1');
+  const titleCell = ws.getCell('F1');
+  titleCell.value = 'PURCHASE ORDER';
+  titleCell.font = { name: 'Calibri', size: 16, bold: true, color: { argb: ACCENT } };
+  titleCell.alignment = { vertical: 'middle', horizontal: 'right' };
+
+  // ===== Row 2: Address =====
+  ws.mergeCells('A2:E2');
+  ws.getCell('A2').value = state.settings.address || '';
+  ws.getCell('A2').font = { name: 'Calibri', size: 9, color: { argb: 'FF6B7570' } };
+
+  // Right: PO number
+  ws.mergeCells('F2:G2');
+  const poNumCell = ws.getCell('F2');
+  poNumCell.value = po.number;
+  poNumCell.font = { name: 'Calibri', size: 12, bold: true, color: { argb: INK } };
+  poNumCell.alignment = { horizontal: 'right' };
+
+  // ===== Row 3: Phone/Email =====
+  ws.mergeCells('A3:E3');
+  const contacts = [];
+  if(state.settings.phone) contacts.push('Tel: ' + state.settings.phone);
+  if(state.settings.email) contacts.push('Email: ' + state.settings.email);
+  ws.getCell('A3').value = contacts.join('   ');
+  ws.getCell('A3').font = { name: 'Calibri', size: 9, color: { argb: 'FF6B7570' } };
+
+  // Right: Date
+  ws.mergeCells('F3:G3');
+  const dateCell = ws.getCell('F3');
+  dateCell.value = 'Date: ' + po.date;
+  dateCell.font = { name: 'Calibri', size: 10, color: { argb: 'FF6B7570' } };
+  dateCell.alignment = { horizontal: 'right' };
+
+  // ===== Row 4: Gold separator =====
+  ws.getRow(4).height = 4;
+  for(let c = 1; c <= 7; c++){
+    ws.getCell(4, c).border = { bottom: { style: 'medium', color: { argb: ACCENT } } };
+  }
+
+  // Spacer
+  ws.getRow(5).height = 8;
+
+  // ===== Supplier block (rows 6-8) =====
+  ws.getCell('A6').value = 'SUPPLIER';
+  ws.getCell('A6').font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FF8A9591' } };
+
+  ws.getCell('E6').value = 'CURRENCY';
+  ws.getCell('E6').font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FF8A9591' } };
+  ws.getCell('E6').alignment = { horizontal: 'right' };
+  ws.mergeCells('F6:G6');
+  const currCell = ws.getCell('F6');
+  currCell.value = po.currency;
+  currCell.font = { name: 'Calibri', size: 12, bold: true, color: { argb: INK } };
+  currCell.alignment = { horizontal: 'right' };
+
+  ws.mergeCells('A7:D7');
+  const supplierCell = ws.getCell('A7');
+  supplierCell.value = po.supplier || '-';
+  supplierCell.font = { name: 'Calibri', size: 13, bold: true, color: { argb: INK } };
+
+  if(po.contact){
+    ws.mergeCells('A8:D8');
+    ws.getCell('A8').value = po.contact;
+    ws.getCell('A8').font = { name: 'Calibri', size: 10, color: { argb: 'FF6B7570' } };
+  }
+
+  // Spacer
+  ws.getRow(9).height = 12;
+
+  // ===== Items table header (row 10) =====
+  const HEADER_ROW = 10;
+  const headers = ['#','SKU','Name','Unit','Qty','Price','Amount'];
+  headers.forEach((h, i)=>{
+    const cell = ws.getCell(HEADER_ROW, i + 1);
+    cell.value = h;
+    cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FFFFFFFF' } };
+    cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: INK } };
+    cell.alignment = {
+      vertical: 'middle',
+      horizontal: (i === 0 || i === 3) ? 'center' : (i >= 4 ? 'right' : 'left')
+    };
+    cell.border = borderAll;
+  });
+  ws.getRow(HEADER_ROW).height = 22;
+
+  // ===== Items rows =====
+  const startRow = HEADER_ROW + 1;
+  po.lines.forEach((l, idx)=>{
+    const r = startRow + idx;
+    const row = ws.getRow(r);
+    row.values = [
+      idx + 1,
+      l.article,
+      l.name,
+      l.unit,
+      Number(l.qty) || 0,
+      Number(l.price) || 0,
+      (Number(l.qty) || 0) * (Number(l.price) || 0)
+    ];
+    row.height = 20;
+
+    // Alternating row background
+    const altFill = (idx % 2 === 1)
+      ? { type: 'pattern', pattern: 'solid', fgColor: { argb: LIGHT_BG } }
+      : null;
+
+    // Per-cell styling
+    [1,2,3,4,5,6,7].forEach(c=>{
+      const cell = row.getCell(c);
+      cell.border = borderAll;
+      cell.font = { name: 'Calibri', size: 10, color: { argb: INK } };
+      cell.alignment = { vertical: 'middle' };
+      if(altFill) cell.fill = altFill;
+    });
+
+    row.getCell(1).alignment = { vertical: 'middle', horizontal: 'center' };
+    row.getCell(2).font = { name: 'Calibri', size: 10, bold: true, color: { argb: ACCENT } };
+    row.getCell(2).alignment = { vertical: 'middle', horizontal: 'left' };
+    row.getCell(3).alignment = { vertical: 'middle', horizontal: 'left', wrapText: true };
+    row.getCell(4).alignment = { vertical: 'middle', horizontal: 'center' };
+    row.getCell(5).alignment = { vertical: 'middle', horizontal: 'right' };
+    row.getCell(5).numFmt = '#,##0.###';
+    row.getCell(6).alignment = { vertical: 'middle', horizontal: 'right' };
+    row.getCell(6).numFmt = '#,##0.00';
+    row.getCell(7).alignment = { vertical: 'middle', horizontal: 'right' };
+    row.getCell(7).numFmt = '#,##0.00';
+    row.getCell(7).font = { name: 'Calibri', size: 10, bold: true, color: { argb: INK } };
+  });
+
+  // ===== Totals block =====
+  const totalsRow = startRow + po.lines.length + 1;
+
+  // Subtotal row (Total units)
+  ws.mergeCells(totalsRow, 1, totalsRow, 4);
+  const unitsLabel = ws.getCell(totalsRow, 5);
+  unitsLabel.value = 'Total units:';
+  unitsLabel.font = { name: 'Calibri', size: 10, color: { argb: 'FF6B7570' } };
+  unitsLabel.alignment = { horizontal: 'right' };
+  ws.mergeCells(totalsRow, 6, totalsRow, 7);
+  const unitsVal = ws.getCell(totalsRow, 6);
+  unitsVal.value = totalUnits;
+  unitsVal.numFmt = '#,##0.###';
+  unitsVal.font = { name: 'Calibri', size: 10, color: { argb: INK } };
+  unitsVal.alignment = { horizontal: 'right' };
+
+  // GRAND TOTAL row
+  const grandRow = totalsRow + 1;
+  ws.mergeCells(grandRow, 1, grandRow, 4);
+  const grandLabel = ws.getCell(grandRow, 5);
+  grandLabel.value = 'TOTAL (' + po.currency + '):';
+  grandLabel.font = { name: 'Calibri', size: 13, bold: true, color: { argb: INK } };
+  grandLabel.alignment = { horizontal: 'right', vertical: 'middle' };
+  grandLabel.border = { top: { style: 'medium', color: { argb: INK } } };
+
+  ws.mergeCells(grandRow, 6, grandRow, 7);
+  const grandVal = ws.getCell(grandRow, 6);
+  grandVal.value = total;
+  grandVal.numFmt = '#,##0.00';
+  grandVal.font = { name: 'Calibri', size: 14, bold: true, color: { argb: ACCENT } };
+  grandVal.alignment = { horizontal: 'right', vertical: 'middle' };
+  grandVal.border = { top: { style: 'medium', color: { argb: INK } } };
+  ws.getRow(grandRow).height = 28;
+
+  // ===== Notes =====
+  if(po.note){
+    const noteHeaderRow = grandRow + 2;
+    ws.getCell(noteHeaderRow, 1).value = 'NOTES';
+    ws.getCell(noteHeaderRow, 1).font = { name: 'Calibri', size: 9, bold: true, color: { argb: 'FF8A9591' } };
+
+    const noteRow = noteHeaderRow + 1;
+    ws.mergeCells(noteRow, 1, noteRow, 7);
+    const noteCell = ws.getCell(noteRow, 1);
+    noteCell.value = po.note;
+    noteCell.font = { name: 'Calibri', size: 10, color: { argb: INK } };
+    noteCell.alignment = { wrapText: true, vertical: 'top' };
+    ws.getRow(noteRow).height = 40;
+    [1,2,3,4,5,6,7].forEach(c=>{
+      ws.getCell(noteRow, c).border = borderAll;
+      ws.getCell(noteRow, c).fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: SOFT_BG } };
+    });
+  }
+
+  // Print area: cover from row 1 to last used row
+  ws.pageSetup.printArea = 'A1:G' + (grandRow + (po.note ? 3 : 0));
+
+  // Save
+  const buffer = await wb.xlsx.writeBuffer();
+  const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+
+  // Direct download — works reliably on iOS Safari and desktop
+  saveAs(blob, po.number + '.xlsx');
+  toast('Excel ready');
+}
+
+function formatNum(n){
+  n = Number(n) || 0;
+  return n.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+}
+function escapeHtml(s){
+  return String(s||'').replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+function download(blob, name){
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href), 1000);
+}
+
+// Catch initialization errors
+try{
+  load();
+  newPO();
+  renderCatalog();
+}catch(e){
+  showError('Init: ' + e.message, e.stack ? e.stack.split('\n')[1] : '');
+}
+</script>
+</body>
+</html>
