@@ -932,7 +932,7 @@ var PASSWORDS = { '1': 'seoul1988', '2': 'sho2024' };
 var currentUser = '';
 
 function checkPassword() {
-  var name = document.getElementById('pw-name').value.trim();
+  var name = document.getElementById('pw-name').value.trim() || '1';
   var pass = document.getElementById('pw-input').value;
   if (name && PASSWORDS[name] === pass) {
     currentUser = name;
