@@ -15,26 +15,17 @@
   *{box-sizing:border-box;margin:0;padding:0;}
   body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
 
-  /* HEADER */
   header{background:var(--surface);border-bottom:1px solid var(--border);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
   .logo{font-family:var(--mono);font-size:12px;font-weight:600;color:var(--accent);letter-spacing:2px;text-transform:uppercase;}
   .logo span{color:var(--text2);font-weight:400;}
-  .hdr-btns{display:flex;gap:8px;}
+  .hdr-btns{display:flex;gap:8px;flex-wrap:wrap;}
 
-  /* TABS */
-  .tabs{display:flex;background:var(--surface);border-bottom:1px solid var(--border);}
-  .tab{padding:10px 20px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:1px;color:var(--text3);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;}
-  .tab.active{color:var(--accent);border-bottom-color:var(--accent);}
-  .tab-panel{display:none;} .tab-panel.active{display:block;}
-
-  /* STATS */
   .stats-bar{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);position:sticky;top:57px;z-index:99;}
   .stat{background:var(--surface);padding:16px 20px;display:flex;flex-direction:column;gap:5px;}
   .stat-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;}
   .stat-value{font-family:var(--mono);font-size:18px;font-weight:600;}
   .stat-value.red{color:var(--red);} .stat-value.green{color:var(--green);} .stat-value.yellow{color:var(--accent3);}
 
-  /* TOOLBAR */
   .toolbar{padding:12px 20px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;background:var(--surface);border-bottom:1px solid var(--border);}
   .search-box{flex:1;min-width:180px;background:var(--bg);border:1px solid var(--border);border-radius:6px;padding:8px 12px;color:var(--text);font-family:var(--sans);font-size:13px;outline:none;transition:border-color .15s;}
   .search-box:focus{border-color:var(--accent);}
@@ -46,20 +37,15 @@
   .amount-range input:focus{border-color:var(--accent);}
   .amount-range span{color:var(--text3);font-size:12px;}
 
-  /* BUTTONS */
   .btn{padding:8px 16px;border-radius:6px;font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.5px;cursor:pointer;border:none;transition:all .15s;white-space:nowrap;}
   .btn-primary{background:var(--accent);color:#000;} .btn-primary:hover{background:#00f0c0;}
   .btn-outline{background:transparent;color:var(--text2);border:1px solid var(--border);}
   .btn-outline:hover{border-color:var(--accent);color:var(--accent);}
-  .btn-danger{background:transparent;color:var(--red);border:1px solid var(--border);}
-  .btn-danger:hover{border-color:var(--red);}
 
-  /* TABLE */
   .table-wrap{overflow-x:auto;}
   table{width:100%;border-collapse:collapse;font-size:13px;}
   thead th{background:var(--surface2);padding:10px 14px;text-align:left;font-family:var(--mono);font-size:10px;font-weight:600;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;}
   thead th:hover{color:var(--text2);}
-  thead th.sorted{color:var(--accent);}
   tbody tr{border-bottom:1px solid rgba(42,48,64,.5);transition:background .1s;}
   tbody tr:hover{background:var(--surface2);}
   tbody tr.has-note td:first-child{border-left:2px solid var(--accent3);}
@@ -87,10 +73,8 @@
   .act-btn.edit:hover{border-color:var(--accent);color:var(--accent);}
   .act-btn.note-btn:hover{border-color:var(--accent3);color:var(--accent3);}
 
-  /* INLINE EDIT */
   .inline-input{background:var(--bg);border:1px solid var(--accent);border-radius:4px;color:var(--text);font-family:var(--mono);font-size:13px;font-weight:600;padding:2px 6px;width:100px;text-align:right;outline:none;}
 
-  /* MODAL */
   .modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;align-items:center;justify-content:center;padding:20px;}
   .modal-overlay.open{display:flex;}
   .modal{background:var(--surface);border:1px solid var(--border);border-radius:12px;width:100%;max-width:500px;padding:26px;max-height:90vh;overflow-y:auto;}
@@ -107,72 +91,19 @@
   .type-btn.active-expense{border-color:var(--red);background:rgba(255,107,107,.1);color:var(--red);}
   .modal-actions{display:flex;gap:10px;margin-top:18px;justify-content:flex-end;}
 
-  /* CATEGORY TOTALS */
-  .cat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:20px;}
-  .cat-card{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:16px;}
-  .cat-card-label{font-family:var(--mono);font-size:10px;color:var(--text3);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
-  .cat-card-amount{font-family:var(--mono);font-size:17px;font-weight:600;margin-bottom:4px;}
-  .cat-card-count{font-size:11px;color:var(--text3);}
-  .cat-bar{height:4px;border-radius:2px;margin-top:10px;background:var(--border);}
-  .cat-bar-fill{height:100%;border-radius:2px;transition:width .4s;}
-
-  /* BACKUP PANEL */
-  .backup-panel{padding:20px;display:flex;flex-direction:column;gap:16px;}
-  .backup-section{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:18px;}
-  .backup-section h3{font-family:var(--mono);font-size:11px;font-weight:600;color:var(--accent);letter-spacing:1px;text-transform:uppercase;margin-bottom:12px;}
-  .backup-section p{font-size:13px;color:var(--text2);margin-bottom:12px;line-height:1.5;}
-  .backup-btns{display:flex;gap:10px;flex-wrap:wrap;}
-  .backup-info{font-family:var(--mono);font-size:11px;color:var(--text3);margin-top:8px;}
-
-  /* EMPTY / FOOTER */
   .empty-state{text-align:center;padding:60px 20px;color:var(--text3);font-family:var(--mono);font-size:13px;}
   .footer-bar{background:var(--surface);border-top:1px solid var(--border);padding:10px 20px;display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:11px;color:var(--text3);}
 
-  /* TOAST */
   .toast{position:fixed;bottom:22px;right:22px;background:var(--accent);color:#000;padding:9px 16px;border-radius:6px;font-family:var(--mono);font-size:12px;font-weight:600;z-index:999;opacity:0;transform:translateY(8px);transition:all .2s;pointer-events:none;}
   .toast.show{opacity:1;transform:translateY(0);}
   .toast.error{background:var(--red);color:#fff;}
 
-
-
   body.light {
-    --bg: #f0ede8;
-    --surface: #faf7f4;
-    --surface2: #ede9e3;
-    --border: #d4cfc7;
-    --text: #2a2420;
-    --text2: #6b5f54;
-    --text3: #a89e94;
-    --green: #1a7a5e;
-    --red: #c0392b;
-    --accent: #1a7a5e;
-    --accent3: #b07d2a;
+    --bg:#f0ede8; --surface:#faf7f4; --surface2:#ede9e3; --border:#d4cfc7;
+    --text:#2a2420; --text2:#6b5f54; --text3:#a89e94;
+    --green:#1a7a5e; --red:#c0392b; --accent:#1a7a5e; --accent3:#b07d2a;
   }
-  body.light header { background: var(--surface); }
-  body.light .stats-bar { background: var(--border); }
-  body.light .stat { background: var(--surface); }
-  body.light .stat-value.red { color: var(--red); }
-  body.light .stat-value.green { color: var(--green); }
-  body.light .stat-value.yellow { color: var(--accent3); }
-  body.light thead th { background: var(--surface2); color: var(--text3); }
-  body.light tbody tr:hover { background: var(--surface2); }
-  body.light .toolbar { background: var(--surface); }
-  body.light .tabs { background: var(--surface); }
-  body.light .tab { color: var(--text3); }
-  body.light .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-  body.light .search-box, body.light select, body.light .amount-range input {
-    background: var(--bg); color: var(--text); border-color: var(--border);
-  }
-  body.light .btn-outline { color: var(--text2); border-color: var(--border); }
-  body.light .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
-  body.light .btn-primary { background: var(--accent); color: #fff; }
-  body.light .footer-bar { background: var(--surface); color: var(--text3); }
-  body.light .modal { background: var(--surface); }
-  body.light .form-group input, body.light .form-group select, body.light .form-group textarea {
-    background: var(--bg); color: var(--text); border-color: var(--border);
-  }
-  body.light .type-btn { background: var(--bg); color: var(--text2); border-color: var(--border); }
-  body.light .act-btn { background: var(--surface2); border-color: var(--border); color: var(--text3); }
+  body.light .btn-primary { color:#fff; }
   body.light .cat-container { background: rgba(70,100,180,.12); color: #2a4db5; }
   body.light .cat-freight   { background: rgba(160,120,20,.12); color: #8a6010; }
   body.light .cat-customs   { background: rgba(180,50,40,.12); color: #b03020; }
@@ -181,11 +112,10 @@
   body.light .cat-other     { background: rgba(0,0,0,.07); color: var(--text2); }
   body.light #backup-banner { background: #fdf3dc; border-top-color: #c8960a; }
   body.light #backup-banner span { color: #8a6010; }
-  body.light .toast { background: var(--accent); color: #fff; }
+  body.light .toast { color: #fff; }
 
   @media print {
-    header, .toolbar, #backup-banner, .footer-bar, .row-actions,
-    .modal-overlay, .toast, .tabs { display: none !important; }
+    header, .toolbar, #backup-banner, .footer-bar, .row-actions, .modal-overlay, .toast { display: none !important; }
     body { background: #fff !important; color: #000 !important; }
     .stats-bar { position: static !important; display: grid !important; grid-template-columns: repeat(4,1fr); border: 1px solid #ccc; margin-bottom: 16px; }
     .stat { background: #f5f5f5 !important; padding: 10px 14px; }
@@ -200,12 +130,11 @@
     .td-amount.expense { color: #c00 !important; }
     .td-balance.neg { color: #c00 !important; }
     .td-balance.pos { color: #060 !important; }
-    .cat-badge { border: 1px solid #bbb !important; background: #f0f0f0 !important; color: #333 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .cat-badge { border: 1px solid #bbb !important; background: #f0f0f0 !important; color: #333 !important; }
   }
 
   @media(max-width:700px){
     .stats-bar{grid-template-columns:1fr 1fr;}
-    .cat-grid{grid-template-columns:1fr 1fr;}
     .toolbar{padding:10px 14px;}
     header{padding:12px 14px;}
     table{font-size:12px;}
@@ -223,15 +152,16 @@
   <div style="background:#161922;border:1px solid #2a3040;border-radius:12px;padding:32px;width:100%;max-width:320px;display:flex;flex-direction:column;gap:14px;">
     <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:#8890a8;letter-spacing:1px;">SELECT USER</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-      <button id="btn-ata" onclick="selectUser('1')" style="padding:10px;border-radius:6px;border:1px solid #2a3040;background:#0d0f14;color:#8890a8;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;">1</button>
-      <button id="btn-sho" onclick="selectUser('2')" style="padding:10px;border-radius:6px;border:1px solid #2a3040;background:#0d0f14;color:#8890a8;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;cursor:pointer;transition:all .15s;">2</button>
+      <button id="btn-ata" onclick="selectUser('1')" style="padding:10px;border-radius:6px;border:1px solid #2a3040;background:#0d0f14;color:#8890a8;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;cursor:pointer;">1</button>
+      <button id="btn-sho" onclick="selectUser('2')" style="padding:10px;border-radius:6px;border:1px solid #2a3040;background:#0d0f14;color:#8890a8;font-family:'IBM Plex Mono',monospace;font-size:13px;font-weight:600;cursor:pointer;">2</button>
     </div>
-    <input type="hidden" id="pw-name" value="">
+    <input type="hidden" id="pw-name" value="1">
     <input type="password" id="pw-input" placeholder="Password" style="background:#0d0f14;border:1px solid #2a3040;border-radius:6px;padding:12px 14px;color:#e8eaf0;font-family:'IBM Plex Mono',monospace;font-size:14px;outline:none;width:100%;" onkeydown="if(event.key==='Enter')checkPassword()">
-    <div id="pw-error" style="color:#ff6b6b;font-family:'IBM Plex Mono',monospace;font-size:11px;display:none;">Wrong password or empty name</div>
-    <button onclick="checkPassword()" style="background:#00d4aa;color:#000;border:none;border-radius:6px;padding:12px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:1px;">ENTER</button>
+    <div id="pw-error" style="color:#ff6b6b;font-family:'IBM Plex Mono',monospace;font-size:11px;display:none;">Wrong password</div>
+    <button id="pw-btn" onclick="checkPassword()" style="background:#00d4aa;color:#000;border:none;border-radius:6px;padding:12px;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:1px;">ENTER</button>
   </div>
 </div>
+
 <header>
   <div class="logo">DECOR MASTER <span>/ FINANCIAL LEDGER</span></div>
   <div id="user-display" style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--accent);display:none;">👤 <span id="user-name-display"></span></div>
@@ -240,9 +170,10 @@
     <button class="btn btn-outline" onclick="exportCSV()" title="Download CSV">↓ CSV</button>
     <button class="btn btn-outline" onclick="window.print()" title="Save as PDF">↓ PDF</button>
     <button class="btn btn-outline" onclick="backupJSON()" title="Save backup JSON">💾 Backup</button>
-    <label for="restore-file" class="btn btn-outline" style="display:inline-flex;align-items:center;cursor:pointer;" title="Восстановить из backup">↑ Restore</label>
+    <label for="restore-file" class="btn btn-outline" style="display:inline-flex;align-items:center;cursor:pointer;" title="Restore from backup">↑ Restore</label>
     <input type="file" id="restore-file" accept=".json" style="display:none" onchange="restoreJSON(this)">
     <button class="btn btn-primary" onclick="openModal()">+ New Entry</button>
+    <button class="btn btn-outline" onclick="logout()" title="Log out">Log out</button>
   </div>
 </header>
 
@@ -304,11 +235,6 @@
   </div>
 </div>
 
-<!-- HIDDEN: cat-grid still needed for renderCats -->
-<div id="cat-grid" style="display:none"></div>
-<div id="backup-info" style="display:none"></div>
-
-<!-- ADD/EDIT MODAL -->
 <div class="modal-overlay" id="modal">
   <div class="modal">
     <h2 id="modal-title">+ New Entry</h2>
@@ -339,7 +265,6 @@
   </div>
 </div>
 
-<!-- NOTE MODAL -->
 <div class="modal-overlay" id="note-modal">
   <div class="modal" style="max-width:400px;">
     <h2>📝 Note</h2>
@@ -351,9 +276,8 @@
   </div>
 </div>
 
-<!-- BACKUP BANNER -->
 <div id="backup-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#1e2330;border-top:2px solid #ffd166;padding:12px 20px;align-items:center;justify-content:space-between;gap:12px;z-index:150;font-size:13px;">
-  <span style="color:#ffd166;font-family:'IBM Plex Sans',sans-serif;">&#9888; <strong>Changes since last backup.</strong> Save to avoid losing data.</span>
+  <span style="color:#ffd166;">&#9888; <strong>Changes since last backup.</strong> Save to avoid losing data.</span>
   <div style="display:flex;gap:8px;flex-shrink:0;">
     <button onclick="backupJSON();hideBanner();" style="padding:7px 14px;border-radius:6px;background:#00d4aa;color:#000;border:none;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;cursor:pointer;">&#8595; Save backup</button>
     <button onclick="hideBanner()" style="padding:7px 12px;border-radius:6px;background:transparent;color:#8890a8;border:1px solid #2a3040;font-family:'IBM Plex Mono',monospace;font-size:11px;cursor:pointer;">Later</button>
@@ -364,136 +288,18 @@
 
 <script>
 // ============================================================
-//  INITIAL DATA (115 transactions from Excel)
+//  STATE (all data lives only in Firebase, nothing in this file)
 // ============================================================
-var INITIAL = [
-  {id:1,  date:'',           received:0,       sent:77828,    desc:'Container KL06',                             cat:'container', note:''},
-  {id:2,  date:'',           received:0,       sent:62798,    desc:'Container BX07',                             cat:'container', note:''},
-  {id:3,  date:'',           received:0,       sent:71824,    desc:'Container KL07',                             cat:'container', note:''},
-  {id:4,  date:'',           received:0,       sent:77216.5,  desc:'Container KL08',                             cat:'container', note:''},
-  {id:5,  date:'',           received:0,       sent:71634,    desc:'Container KL09',                             cat:'container', note:''},
-  {id:6,  date:'',           received:0,       sent:86284,    desc:'Containers BX08, BX08 Plus',                 cat:'container', note:''},
-  {id:7,  date:'',           received:0,       sent:71079.73, desc:'Thermal Brake',                              cat:'container', note:''},
-  {id:8,  date:'',           received:0,       sent:34020,    desc:'Accessories',                                cat:'container', note:''},
-  {id:9,  date:'',           received:0,       sent:45450,    desc:'Sunflower Seeds',                            cat:'other',     note:''},
-  {id:10, date:'',           received:0,       sent:61384.54, desc:'Container BX09-TN09',                        cat:'container', note:''},
-  {id:11, date:'',           received:0,       sent:61830.25, desc:'Container BX10-TN10',                        cat:'container', note:''},
-  {id:12, date:'',           received:0,       sent:31732.62, desc:'Container Z01',                              cat:'container', note:''},
-  {id:13, date:'2024-10-15', received:0,       sent:48760.3,  desc:'Container Z02',                              cat:'container', note:''},
-  {id:14, date:'2024-02-03', received:64726,   sent:0,        desc:'Shohr sent',                                 cat:'payment',   note:''},
-  {id:15, date:'2024-02-14', received:6000,    sent:0,        desc:'Shohr sent — expenses Ata',                  cat:'payment',   note:''},
-  {id:16, date:'2024-02-27', received:50000,   sent:0,        desc:'Shohr sent',                                 cat:'payment',   note:''},
-  {id:17, date:'',           received:17100,   sent:0,        desc:'Shohr sent',                                 cat:'payment',   note:''},
-  {id:18, date:'',           received:32900,   sent:0,        desc:'Shohr sent',                                 cat:'payment',   note:''},
-  {id:19, date:'2024-04-13', received:3500,    sent:0,        desc:'Shohr sent',                                 cat:'payment',   note:''},
-  {id:20, date:'2024-04-17', received:47000,   sent:0,        desc:'Shohr sent',                                 cat:'payment',   note:''},
-  {id:21, date:'2024-05-11', received:32000,   sent:0,        desc:'Shohr sent',                                 cat:'payment',   note:''},
-  {id:22, date:'',           received:30000,   sent:0,        desc:'Shohr sent — PR 001',                        cat:'payment',   note:''},
-  {id:23, date:'2024-07-01', received:5500,    sent:0,        desc:'Shohr sent — spent Ata car',                 cat:'personal',  note:''},
-  {id:24, date:'2024-07-01', received:11615,   sent:0,        desc:'Shohr sent — spent Ata car',                 cat:'personal',  note:''},
-  {id:25, date:'2024-07-11', received:10000,   sent:0,        desc:'Shohr sent',                                 cat:'payment',   note:'PAID TO ZOY(BX) - 10000 USD'},
-  {id:26, date:'2024-07-22', received:60165,   sent:0,        desc:'Shohr sent',                                 cat:'payment',   note:'PAID TO ZOY(BX) - 60165 USD'},
-  {id:27, date:'2024-08-01', received:23000,   sent:0,        desc:'Shohr sent — delivered to Rah',              cat:'payment',   note:'PAID TO ZOY(BX) - 22279.25 USD'},
-  {id:28, date:'2024-08-09', received:70000,   sent:0,        desc:'Shohr sent — delivered to Rah',              cat:'payment',   note:'PAID TO ZOY(RFQ)-50015 / MABEL-13946.08 / DEMURRAGE-260'},
-  {id:29, date:'2024-08-20', received:30000,   sent:0,        desc:'Shohr sent — Z01 balance',                   cat:'payment',   note:''},
-  {id:30, date:'2024-09-02', received:1600,    sent:0,        desc:'Shohr sent — Z01 transport',                 cat:'freight',   note:''},
-  {id:31, date:'2024-09-10', received:24994,   sent:0,        desc:'Shohr sent — deposit Z02',                   cat:'payment',   note:'PRF-2352.15 USD'},
-  {id:32, date:'2024-09-13', received:10000,   sent:0,        desc:'Shohr sent — delivered to Rah',              cat:'payment',   note:'PAID TO MABEL FOR ACCESS - 75214.64 USD'},
-  {id:33, date:'2024-09-24', received:50000,   sent:0,        desc:'Shohr sent — delivered to Rah',              cat:'payment',   note:''},
-  {id:34, date:'2024-10-02', received:7000,    sent:0,        desc:'Shohr sent — received in DBX',               cat:'payment',   note:''},
-  {id:35, date:'2024-10-07', received:23000,   sent:0,        desc:'Shohr sent — balance Z02',                   cat:'payment',   note:''},
-  {id:36, date:'2024-10-07', received:3869,    sent:0,        desc:'Ata personal expenses',                      cat:'personal',  note:''},
-  {id:37, date:'2024-10-29', received:73317,   sent:0,        desc:'54317+3000+6000+10000 = 73317',               cat:'payment',   note:'Az credited 72628'},
-  {id:38, date:'2024-11-06', received:12255,   sent:0,        desc:'SHO/AZT',                                    cat:'payment',   note:'Az credited 12139'},
-  {id:39, date:'2024-11-10', received:3024,    sent:0,        desc:'Shohr sent / CEL',                           cat:'payment',   note:''},
-  {id:40, date:'2024-11-18', received:0,       sent:61706.17, desc:'RQF TN11',                                   cat:'container', note:''},
-  {id:41, date:'2024-11-18', received:2350,    sent:0,        desc:'Transport RQF TN11',                         cat:'freight',   note:''},
-  {id:42, date:'2024-11-18', received:900,     sent:0,        desc:'Customs RQF TN11',                           cat:'customs',   note:''},
-  {id:43, date:'2024-11-18', received:350,     sent:0,        desc:'Tax (Nalog) RQF TN11',                       cat:'customs',   note:''},
-  {id:44, date:'2024-11-18', received:0,       sent:67334,    desc:'RQF TN12',                                   cat:'container', note:''},
-  {id:45, date:'2024-11-18', received:2350,    sent:0,        desc:'Transport RQF TN12',                         cat:'freight',   note:''},
-  {id:46, date:'2024-11-18', received:900,     sent:0,        desc:'Customs RQF TN12',                           cat:'customs',   note:''},
-  {id:47, date:'2024-11-18', received:350,     sent:0,        desc:'Tax (Nalog) RQF TN12',                       cat:'customs',   note:''},
-  {id:48, date:'2024-11-18', received:0,       sent:135566,   desc:'Accessories (container)',                    cat:'container', note:''},
-  {id:49, date:'2024-11-18', received:165,     sent:0,        desc:'Overstay',                                   cat:'other',     note:''},
-  {id:50, date:'2024-11-18', received:4100,    sent:0,        desc:'Transport — Accessories',                    cat:'freight',   note:''},
-  {id:51, date:'2024-11-18', received:1375,    sent:0,        desc:'Contract for 5 containers — Al Profile',    cat:'other',     note:''},
-  {id:52, date:'2024-11-18', received:655,     sent:0,        desc:'Accessories contract for 1 container',       cat:'other',     note:''},
-  {id:53, date:'2024-11-18', received:168,     sent:0,        desc:'Ata personal expenses',                      cat:'personal',  note:''},
-  {id:54, date:'2024-11-18', received:200,     sent:0,        desc:'For Al Profile',                             cat:'other',     note:''},
-  {id:55, date:'2024-12-02', received:45000,   sent:0,        desc:'Az credited 44550',                          cat:'payment',   note:''},
-  {id:56, date:'2024-12-14', received:40000,   sent:0,        desc:'Az credited 39600',                          cat:'payment',   note:''},
-  {id:57, date:'2025-01-04', received:0,       sent:71402,    desc:'RQF02-TN13',                                 cat:'container', note:''},
-  {id:58, date:'2025-01-04', received:900,     sent:0,        desc:'Customs (Rastamojka) TN13',                  cat:'customs',   note:''},
-  {id:59, date:'',           received:350,     sent:0,        desc:'Tax (Nalog) TN13',                           cat:'customs',   note:''},
-  {id:60, date:'2025-01-04', received:0,       sent:69270,    desc:'RQF04-TN14',                                 cat:'container', note:''},
-  {id:61, date:'2025-01-04', received:900,     sent:0,        desc:'Customs (Rastamojka) TN14',                  cat:'customs',   note:''},
-  {id:62, date:'2025-01-04', received:350,     sent:0,        desc:'Tax (Nalog) TN14',                           cat:'customs',   note:''},
-  {id:63, date:'2025-01-04', received:17000,   sent:0,        desc:'Az credited 16830',                          cat:'payment',   note:''},
-  {id:64, date:'2025-01-10', received:12000,   sent:0,        desc:'Az credited 14850',                          cat:'payment',   note:''},
-  {id:65, date:'2025-01-19', received:5500,    sent:0,        desc:'Transferred via CEMM',                       cat:'payment',   note:'20185 AED'},
-  {id:66, date:'2025-01-23', received:280,     sent:0,        desc:'Transferred — AT',                           cat:'payment',   note:''},
-  {id:67, date:'2025-01-23', received:0,       sent:69270,    desc:'RQF-05, TN15',                               cat:'container', note:''},
-  {id:68, date:'2025-01-23', received:900,     sent:0,        desc:'Customs (Rastamojka) TN15',                  cat:'customs',   note:''},
-  {id:69, date:'2025-01-23', received:350,     sent:0,        desc:'Tax (Nalog) TN15',                           cat:'customs',   note:''},
-  {id:70, date:'2025-01-12', received:13850,   sent:0,        desc:'Rah AZ balance — transport TN12,13,14',      cat:'freight',   note:''},
-  {id:71, date:'2025-01-12', received:4000,    sent:0,        desc:'Muhammetali',                                cat:'payment',   note:''},
-  {id:72, date:'2025-03-18', received:15000,   sent:0,        desc:'Rah A — part balance payment for screws',    cat:'payment',   note:''},
-  {id:73, date:'2025-04-03', received:15000,   sent:0,        desc:'Sent to Dub via Muhali',                     cat:'payment',   note:''},
-  {id:74, date:'2025-04-18', received:12000,   sent:0,        desc:'Delivered to Garik AZ',                      cat:'payment',   note:''},
-  {id:75, date:'2025-04-23', received:4000,    sent:0,        desc:'Delivered to Garik AZ',                      cat:'payment',   note:''},
-  {id:76, date:'2025-05-02', received:6400,    sent:0,        desc:'Delivered to Garik AZ',                      cat:'payment',   note:''},
-  {id:77, date:'2025-05-22', received:12000,   sent:0,        desc:'Via Mali',                                   cat:'payment',   note:''},
-  {id:78, date:'2025-05-24', received:0,       sent:18396,    desc:'Screws',                                     cat:'container', note:''},
-  {id:79, date:'2025-06-04', received:15000,   sent:0,        desc:'Delivered to Garik AZ',                      cat:'payment',   note:''},
-  {id:80, date:'2025-07-12', received:10000,   sent:0,        desc:'???',                                        cat:'other',     note:''},
-  {id:81, date:'2025-08-21', received:27350,   sent:0,        desc:'Garik AZ',                                   cat:'payment',   note:'9900 (16/08) + 17176 (21/08)'},
-  {id:82, date:'2025-08-27', received:10000,   sent:0,        desc:'Ata DUB',                                    cat:'personal',  note:''},
-  {id:83, date:'2025-09-08', received:0,       sent:44919,    desc:'Accessories KIWI',                           cat:'container', note:''},
-  {id:84, date:'2025-09-18', received:5000,    sent:0,        desc:'Ata DUB',                                    cat:'personal',  note:''},
-  {id:85, date:'2025-09-22', received:32000,   sent:0,        desc:'Garik AZ',                                   cat:'payment',   note:''},
-  {id:86, date:'2024-09-24', received:2000,    sent:0,        desc:'ABDK',                                       cat:'payment',   note:''},
-  {id:87, date:'2025-10-01', received:10000,   sent:0,        desc:'Ata DUB',                                    cat:'personal',  note:''},
-  {id:88, date:'2025-10-18', received:16036,   sent:0,        desc:'Ata personal expenses',                      cat:'personal',  note:''},
-  {id:89, date:'2025-10-18', received:1572,    sent:0,        desc:'Transport — Screws',                         cat:'freight',   note:''},
-  {id:90, date:'2025-10-18', received:1861,    sent:0,        desc:'Transport — Accessories',                    cat:'freight',   note:''},
-  {id:91, date:'2025-11-01', received:3300,    sent:0,        desc:'Ata personal expenses',                      cat:'personal',  note:''},
-  {id:92, date:'2025-11-21', received:25000,   sent:0,        desc:'GAZ',                                        cat:'payment',   note:''},
-  {id:93, date:'2025-11-29', received:3300,    sent:0,        desc:'Ata personal expenses',                      cat:'personal',  note:''},
-  {id:94, date:'2025-12-19', received:1000,    sent:0,        desc:'Ata personal expenses',                      cat:'personal',  note:''},
-  {id:95, date:'2025-12-22', received:5100,    sent:0,        desc:'Freight China → Turkmenistan (Chita)',        cat:'freight',   note:''},
-  {id:96, date:'2025-12-22', received:502,     sent:0,        desc:'Freight ASH → TMB',                          cat:'freight',   note:''},
-  {id:97, date:'2025-12-29', received:3300,    sent:0,        desc:'Ata personal expenses',                      cat:'personal',  note:''},
-  {id:98, date:'2026-01-01', received:0,       sent:91335,    desc:'KNL, CHUNK, SCREWS, KINGB, CHITA, REZIN',    cat:'container', note:''},
-  {id:99, date:'2026-01-02', received:50000,   sent:0,        desc:'GAZ',                                        cat:'payment',   note:''},
-  {id:100,date:'2026-01-08', received:6000,    sent:0,        desc:'Ata personal expenses',                      cat:'personal',  note:''},
-  {id:101,date:'2026-01-22', received:5877,    sent:0,        desc:'Ata',                                        cat:'personal',  note:''},
-  {id:102,date:'2026-01-16', received:2000,    sent:0,        desc:'GAZ',                                        cat:'payment',   note:''},
-  {id:103,date:'2026-01-27', received:3300,    sent:0,        desc:'Ata personal expenses',                      cat:'personal',  note:''},
-  {id:104,date:'2026-02-01', received:115,     sent:0,        desc:'China cargo',                                cat:'freight',   note:''},
-  {id:105,date:'2026-02-03', received:5045,    sent:0,        desc:'Mali — Dub to Ata',                          cat:'payment',   note:''},
-  {id:106,date:'2026-02-10', received:1225,    sent:0,        desc:'Customs — Chita and others',                 cat:'customs',   note:''},
-  {id:107,date:'2026-02-26', received:3300,    sent:0,        desc:'AGAG Ata',                                   cat:'personal',  note:''},
-  {id:108,date:'2026-02-26', received:0,       sent:14400,    desc:'Zamok (Locks)',                               cat:'container', note:''},
-  {id:109,date:'2026-03-03', received:5025,    sent:0,        desc:'Mali — Dub to Ata',                          cat:'payment',   note:''},
-  {id:110,date:'2026-03-03', received:103,     sent:0,        desc:'Sadaka',                                     cat:'other',     note:''},
-  {id:111,date:'2026-03-05', received:700,     sent:0,        desc:'Zamok (Locks) freight',                      cat:'freight',   note:''},
-  {id:112,date:'2026-03-23', received:2513,    sent:0,        desc:'Accessories freight',                        cat:'freight',   note:''},
-  {id:113,date:'2026-03-28', received:6000,    sent:0,        desc:'GAZ',                                        cat:'payment',   note:''},
-  {id:114,date:'2026-04-02', received:3300,    sent:0,        desc:'AGAG Ata',                                   cat:'personal',  note:''},
-  {id:115,date:'2026-04-03', received:0,       sent:77000,    desc:'',                                           cat:'container', note:''},
-];
-
-// ============================================================
-//  STATE
-// ============================================================
-var transactions, nextId, sortField = 'id', sortAsc = true;
+var transactions = [], nextId = 1, sortField = 'id', sortAsc = true;
 var editingNoteId = null, editingId = null, currentType = 'income';
+var dataReady = false;
 
 var CAT_LABELS = {container:'Container',freight:'Freight',customs:'Customs',payment:'Payment',personal:'Personal',other:'Other'};
-var CAT_COLORS = {container:'#6495ed',freight:'#ffd166',customs:'#ff6b6b',payment:'#00d4aa',personal:'#c8a0ff',other:'#8890a8'};
 
+var _listening = false;
 function load() {
+  if (_listening) return;
+  _listening = true;
   document.getElementById('stat-balance').textContent = '...';
   LEDGER_REF.on('value', function(snapshot) {
     var data = snapshot.val();
@@ -501,17 +307,21 @@ function load() {
       transactions = data.transactions;
       nextId = data.nextId || 200;
     } else {
-      transactions = INITIAL.map(function(t){ return Object.assign({}, t); });
-      nextId = 116;
-      LEDGER_REF.set({transactions: transactions, nextId: nextId});
+      transactions = [];
+      nextId = 1;
     }
+    dataReady = true;
     renderTable();
+  }, function(err) {
+    _listening = false;
+    dataReady = false;
+    showToast('No access to data (' + (err && err.code ? err.code : 'error') + ')', true);
   });
 }
 
 function persist() {
+  if (!dataReady) { showToast('Data not loaded yet — not saved', true); return; }
   LEDGER_REF.set({transactions: transactions, nextId: nextId});
-  localStorage.setItem('dm_ledger_v3', JSON.stringify({transactions: transactions, nextId: nextId}));
 }
 
 // ============================================================
@@ -543,10 +353,9 @@ function getFiltered() {
   var type = document.getElementById('filter-type').value;
   var minA = parseFloat(document.getElementById('amt-min').value) || 0;
   var maxA = parseFloat(document.getElementById('amt-max').value) || Infinity;
-
   return transactions.filter(function(t) {
     var amt = t.received || t.sent;
-    if (q && t.desc.toLowerCase().indexOf(q)===-1 && (t.note||'').toLowerCase().indexOf(q)===-1) return false;
+    if (q && (t.desc||'').toLowerCase().indexOf(q)===-1 && (t.note||'').toLowerCase().indexOf(q)===-1) return false;
     if (cat && t.cat!==cat) return false;
     if (type==='income' && t.received===0) return false;
     if (type==='expense' && t.sent===0) return false;
@@ -554,12 +363,10 @@ function getFiltered() {
     return true;
   });
 }
-
 function sortBy(field) {
   if (sortField===field) sortAsc=!sortAsc; else { sortField=field; sortAsc=true; }
   renderTable();
 }
-
 function getSorted(arr) {
   return arr.slice().sort(function(a,b) {
     var av = a[sortField]||0, bv = b[sortField]||0;
@@ -578,37 +385,34 @@ function renderTable() {
   var filtered = getSorted(getFiltered());
   var tbody = document.getElementById('table-body');
   var empty = document.getElementById('empty-state');
-
   if (filtered.length===0) { tbody.innerHTML=''; empty.style.display='block'; updateStats(); return; }
   empty.style.display='none';
 
-  // running balance map
-  var balMap = {};
-  var bal = 0;
+  var balMap = {}, bal = 0;
   for (var i=0;i<transactions.length;i++) {
     bal += transactions[i].received - transactions[i].sent;
     balMap[transactions[i].id] = bal;
   }
 
   var html='';
-  for (var i=0;i<filtered.length;i++) {
-    var t = filtered[i];
+  for (var j=0;j<filtered.length;j++) {
+    var t = filtered[j];
     var b = balMap[t.id];
     var hasNote = t.note && t.note.trim();
     html += '<tr'+(hasNote?' class="has-note"':'')+'>' +
       '<td class="td-num">'+t.id+'</td>' +
       '<td class="td-date">'+fmtDate(t.date)+'</td>' +
-      '<td class="td-amount '+(t.received>0?'income':'empty')+'" ondblclick="inlineEdit('+t.id+',\'received\')">'+(t.received>0?fmt(t.received):'—')+'</td>' +
-      '<td class="td-amount '+(t.sent>0?'expense':'empty')+'" ondblclick="inlineEdit('+t.id+',\'sent\')">'+(t.sent>0?fmt(t.sent):'—')+'</td>' +
+      '<td class="td-amount '+(t.received>0?'income':'empty')+'" ondblclick="inlineEdit(event,'+t.id+',\'received\')">'+(t.received>0?fmt(t.received):'—')+'</td>' +
+      '<td class="td-amount '+(t.sent>0?'expense':'empty')+'" ondblclick="inlineEdit(event,'+t.id+',\'sent\')">'+(t.sent>0?fmt(t.sent):'—')+'</td>' +
       '<td class="td-desc">'+esc(t.desc||'')+'</td>' +
       '<td class="td-note" title="'+esc(t.note||'')+'">'+(hasNote?'💬 '+esc(t.note):'<span style="color:var(--text3)">—</span>')+'</td>' +
       '<td><span class="cat-badge cat-'+t.cat+'">'+CAT_LABELS[t.cat]+'</span></td>' +
       '<td class="td-balance '+(b<0?'neg':'pos')+'">'+fmtBal(b)+'</td>' +
       '<td style="font-size:11px;color:var(--text3);font-family:var(--mono);white-space:nowrap;">'+(t.added_by||'—')+'</td>'+
       '<td><div class="row-actions">' +
-        '<button class="act-btn note-btn" onclick="openNoteModal('+t.id+')" title="Заметка">📝</button>' +
-        '<button class="act-btn edit" onclick="openModal('+t.id+')" title="Редактировать">✎</button>' +
-        '<button class="act-btn" onclick="deleteTx('+t.id+')" title="Удалить">✕</button>' +
+        '<button class="act-btn note-btn" onclick="openNoteModal('+t.id+')" title="Note">📝</button>' +
+        '<button class="act-btn edit" onclick="openModal('+t.id+')" title="Edit">✎</button>' +
+        '<button class="act-btn" onclick="deleteTx('+t.id+')" title="Delete">✕</button>' +
       '</div></td>' +
     '</tr>';
   }
@@ -629,29 +433,25 @@ function updateStats() {
 }
 
 function clearFilters() {
-  document.getElementById('search').value='';
+  ['search','amt-min','amt-max'].forEach(function(id){document.getElementById(id).value='';});
   document.getElementById('filter-cat').value='';
   document.getElementById('filter-type').value='';
-  document.getElementById('amt-min').value='';
-  document.getElementById('amt-max').value='';
   renderTable();
 }
 
 // ============================================================
 //  INLINE EDIT (double-click on amount)
 // ============================================================
-function inlineEdit(id, field) {
+function inlineEdit(ev, id, field) {
   var t = transactions.find(function(x){return x.id===id;});
   if (!t) return;
   var val = t[field];
-  if (!val || val===0) return; // can't inline-edit empty cell
-
-  var cell = event.target;
+  if (!val) return;
+  var cell = ev.target;
   var orig = cell.innerHTML;
-  cell.innerHTML = '<input class="inline-input" type="number" step="0.01" value="'+val+'" id="ie-'+id+'-'+field+'">';
+  cell.innerHTML = '<input class="inline-input" type="number" step="0.01" value="'+val+'">';
   var inp = cell.querySelector('input');
   inp.focus(); inp.select();
-
   function commit() {
     var newVal = parseFloat(inp.value);
     if (!isNaN(newVal) && newVal > 0) {
@@ -661,11 +461,10 @@ function inlineEdit(id, field) {
       cell.innerHTML = orig;
     }
   }
-
   inp.addEventListener('blur', commit);
   inp.addEventListener('keydown', function(e) {
-    if (e.key==='Enter') { inp.blur(); }
-    if (e.key==='Escape') { cell.innerHTML=orig; }
+    if (e.key==='Enter') inp.blur();
+    if (e.key==='Escape') cell.innerHTML=orig;
   });
 }
 
@@ -742,103 +541,18 @@ function saveNote() {
 }
 
 // ============================================================
-//  TABS
-// ============================================================
-function switchTab(name, el) {
-  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
-  document.querySelectorAll('.tab-panel').forEach(function(p){p.classList.remove('active');});
-  el.classList.add('active');
-  document.getElementById('tab-'+name).classList.add('active');
-  if (name==='cats') renderCats();
-  if (name==='backup') renderBackupInfo();
-}
-
-// ============================================================
-//  CATEGORY TOTALS
-// ============================================================
-function renderCats() {
-  var cats = ['container','freight','customs','payment','personal','other'];
-  var totals = {};
-  cats.forEach(function(c){totals[c]={rec:0,snt:0,count:0};});
-  transactions.forEach(function(t){
-    if (totals[t.cat]) { totals[t.cat].rec+=t.received; totals[t.cat].snt+=t.sent; totals[t.cat].count++; }
-  });
-  var maxVal = Math.max.apply(null, cats.map(function(c){return totals[c].rec+totals[c].snt;}));
-  var html='';
-  cats.forEach(function(c) {
-    var d=totals[c];
-    var net=d.rec-d.snt;
-    var pct=maxVal>0?Math.round((d.rec+d.snt)/maxVal*100):0;
-    html+='<div class="cat-card">'+
-      '<div class="cat-card-label"><span class="cat-badge cat-'+c+'" style="margin-bottom:6px;display:inline-block;">'+CAT_LABELS[c]+'</span></div>'+
-      (d.snt>0?'<div class="cat-card-amount" style="color:var(--red)">'+fmt(d.snt)+'</div><div class="cat-card-count" style="color:var(--text3);font-size:10px;">расход</div>':'') +
-      (d.rec>0?'<div class="cat-card-amount" style="color:var(--green);font-size:14px;">'+fmt(d.rec)+'</div><div class="cat-card-count" style="color:var(--text3);font-size:10px;">приход</div>':'') +
-      '<div class="cat-card-count" style="margin-top:6px;">'+d.count+' запис'+(d.count===1?'ь':d.count<5?'и':'ей')+'</div>'+
-      '<div class="cat-bar"><div class="cat-bar-fill" style="width:'+pct+'%;background:'+CAT_COLORS[c]+';"></div></div>'+
-    '</div>';
-  });
-  document.getElementById('cat-grid').innerHTML=html;
-}
-
-// ============================================================
-//  BACKUP / RESTORE
-// ============================================================
-function renderBackupInfo() {
-  var ts = localStorage.getItem('dm_last_backup_ts');
-  var changed = hasChangesSinceBackup();
-  var info = 'Entries: ' + transactions.length;
-  if (ts) {
-    var d = new Date(ts);
-    info += ' | Last backup: ' + d.toLocaleString('ru');
-  } else {
-    info += ' | Never backed up';
-  }
-  info += changed ? ' ⚠️ Unsaved changes' : ' ✓ Up to date';
-  document.getElementById('backup-info').textContent = info;
-}
-
-// fingerprint = count + sum of all amounts, fast & reliable
-function dataFingerprint() {
-  var sum = 0;
-  for (var i=0; i<transactions.length; i++) sum += transactions[i].received + transactions[i].sent + transactions[i].id;
-  return transactions.length + '_' + sum.toFixed(2);
-}
-
-function markBackedUp() {
-  localStorage.setItem('dm_last_backup_fp', dataFingerprint());
-  localStorage.setItem('dm_last_backup_ts', new Date().toISOString());
-}
-
-function hasChangesSinceBackup() {
-  var saved = localStorage.getItem('dm_last_backup_fp');
-  if (!saved) return true; // never backed up
-  return saved !== dataFingerprint();
-}
-
-// ============================================================
-//  BACKUP FINGERPRINT & BANNER
+//  BACKUP / RESTORE / CSV
 // ============================================================
 function dataFingerprint() {
   var sum = 0;
-  for (var i = 0; i < transactions.length; i++)
-    sum += transactions[i].received + transactions[i].sent + transactions[i].id;
+  for (var i = 0; i < transactions.length; i++) sum += transactions[i].received + transactions[i].sent + transactions[i].id;
   return transactions.length + '_' + sum.toFixed(2);
 }
 function markBackedUp() {
   localStorage.setItem('dm_last_backup_fp', dataFingerprint());
   localStorage.setItem('dm_last_backup_ts', new Date().toISOString());
 }
-function hasChangesSinceBackup() {
-  var saved = localStorage.getItem('dm_last_backup_fp');
-  return !saved || saved !== dataFingerprint();
-}
-function showBanner() {
-  var b = document.getElementById('backup-banner');
-  b.style.display = 'flex';
-}
-function hideBanner() {
-  document.getElementById('backup-banner').style.display = 'none';
-}
+function hideBanner() { document.getElementById('backup-banner').style.display = 'none'; }
 
 function backupJSON() {
   var data = JSON.stringify({version:3, exported: new Date().toISOString(), transactions:transactions, nextId:nextId}, null, 2);
@@ -848,9 +562,6 @@ function backupJSON() {
   a.href=url; a.download='DecorMaster_Backup_'+new Date().toISOString().slice(0,10)+'.json';
   a.click(); URL.revokeObjectURL(url);
   markBackedUp();
-  renderBackupInfo();
-  markBackedUp();
-  renderBackupInfo();
   showToast('✓ Backup saved');
 }
 
@@ -867,7 +578,6 @@ function restoreJSON(input) {
       nextId = data.nextId || (transactions.length+10);
       persist(); renderTable();
       showToast('Restored: '+transactions.length+' entries');
-      switchTab('ledger', document.querySelectorAll('.tab')[0]);
     } catch(err) {
       showToast('File error', true);
     }
@@ -876,15 +586,8 @@ function restoreJSON(input) {
   input.value='';
 }
 
-function resetToInitial() {
-  if (!confirm('Reset to original 115 entries from Excel?\nAll changes will be lost.')) return;
-  transactions = INITIAL.map(function(t){return Object.assign({},t);});
-  nextId=116;
-  persist(); renderTable(); showToast('Data reset');
-}
-
 function exportCSV() {
-  var rows=[['#','Дата','Received (USD)','Sent (USD)','Описание','Заметка','Категория','Balance']];
+  var rows=[['#','Date','Received (USD)','Sent (USD)','Description','Note','Category','Balance']];
   var bal=0;
   transactions.forEach(function(t){
     bal+=t.received-t.sent;
@@ -900,80 +603,86 @@ function exportCSV() {
 }
 
 // ============================================================
-//  TOAST
+//  TOAST / THEME
 // ============================================================
 function showToast(msg, isError) {
   var t=document.getElementById('toast');
   t.textContent=msg;
   t.className='toast'+(isError?' error':'')+' show';
-  setTimeout(function(){t.classList.remove('show');},2200);
+  setTimeout(function(){t.classList.remove('show');},2600);
 }
 
-// Close modals on overlay click
 document.getElementById('modal').addEventListener('click',function(e){if(e.target===this)closeModal();});
 document.getElementById('note-modal').addEventListener('click',function(e){if(e.target===this)closeNoteModal();});
 
-// ============================================================
-//  INIT
-// ============================================================
 function toggleTheme() {
   var isLight = document.body.classList.toggle('light');
   document.getElementById('theme-btn').textContent = isLight ? '🌙' : '☀️';
   localStorage.setItem('dm_theme', isLight ? 'light' : 'dark');
 }
-
 if (localStorage.getItem('dm_theme') === 'light') { document.body.classList.add('light'); document.getElementById('theme-btn').textContent = '🌙'; }
 </script>
 
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 <script>
-var PASSWORDS = { '1': 'decor2007', '2': 'sho2024' };
+// ============================================================
+//  LOGIN (passwords are checked by Firebase, not stored here)
+// ============================================================
+var EMAILS = { '1': 'user1@decor-ledger.app', '2': 'user2@decor-ledger.app' };
 var currentUser = '';
+
+function highlightUser(name) {
+  ['btn-ata','btn-sho'].forEach(function(id){
+    var b = document.getElementById(id);
+    b.style.borderColor = '#2a3040'; b.style.color = '#8890a8'; b.style.background = '#0d0f14';
+  });
+  var btn = document.getElementById(name === '2' ? 'btn-sho' : 'btn-ata');
+  btn.style.borderColor = '#00d4aa'; btn.style.color = '#00d4aa'; btn.style.background = 'rgba(0,212,170,0.1)';
+}
+
+function selectUser(name) {
+  document.getElementById('pw-name').value = name;
+  highlightUser(name);
+  document.getElementById('pw-input').focus();
+}
+
+function showLoginError(msg) {
+  var el = document.getElementById('pw-error');
+  el.textContent = msg;
+  el.style.display = 'block';
+  document.getElementById('pw-input').value = '';
+  document.getElementById('pw-input').focus();
+}
 
 function checkPassword() {
   var name = document.getElementById('pw-name').value.trim() || '1';
   var pass = document.getElementById('pw-input').value;
-  if (name && PASSWORDS[name] === pass) {
-    currentUser = name;
-    localStorage.setItem('dm_user', name);
-    document.getElementById('pw-screen').style.display = 'none';
-    document.getElementById('user-name-display').textContent = name;
-    document.getElementById('user-display').style.display = 'block';
-    document.getElementById('search').focus();
-  } else {
-    document.getElementById('pw-error').style.display = 'block';
-    document.getElementById('pw-input').value = '';
-    if (!name) document.getElementById('pw-name').focus();
-    else document.getElementById('pw-input').focus();
-  }
+  if (!pass) { showLoginError('Enter password'); return; }
+  document.getElementById('pw-error').style.display = 'none';
+  var btn = document.getElementById('pw-btn');
+  btn.textContent = '...'; btn.disabled = true;
+  firebase.auth().signInWithEmailAndPassword(EMAILS[name], pass)
+    .then(function() { localStorage.setItem('dm_user', name); })
+    .catch(function(err) {
+      var c = (err && err.code) || '';
+      if (c.indexOf('network') !== -1) showLoginError('No internet connection');
+      else if (c.indexOf('too-many-requests') !== -1) showLoginError('Too many attempts — wait a few minutes');
+      else showLoginError('Wrong password');
+    })
+    .then(function() { btn.textContent = 'ENTER'; btn.disabled = false; });
 }
 
-// Pre-select user from last session
-var _saved = localStorage.getItem('dm_user');
-if (_saved) {
-  document.getElementById('pw-name').value = _saved;
-  var btnId = _saved === '1' ? 'btn-ata' : 'btn-sho';
-  document.getElementById(btnId).style.borderColor = '#00d4aa';
-  document.getElementById(btnId).style.color = '#00d4aa';
-  document.getElementById(btnId).style.background = 'rgba(0,212,170,0.1)';
+function logout() {
+  firebase.auth().signOut().then(function() { location.reload(); });
 }
+
+// Pre-select last user
+var _saved = localStorage.getItem('dm_user') || '1';
+document.getElementById('pw-name').value = _saved;
+highlightUser(_saved);
 document.getElementById('pw-input').focus();
-
-function selectUser(name) {
-  document.getElementById('pw-name').value = name;
-  document.getElementById('btn-ata').style.borderColor = '#2a3040';
-  document.getElementById('btn-ata').style.color = '#8890a8';
-  document.getElementById('btn-ata').style.background = '#0d0f14';
-  document.getElementById('btn-sho').style.borderColor = '#2a3040';
-  document.getElementById('btn-sho').style.color = '#8890a8';
-  document.getElementById('btn-sho').style.background = '#0d0f14';
-  var btnId = name === '1' ? 'btn-ata' : 'btn-sho';
-  document.getElementById(btnId).style.borderColor = '#00d4aa';
-  document.getElementById(btnId).style.color = '#00d4aa';
-  document.getElementById(btnId).style.background = 'rgba(0,212,170,0.1)';
-  document.getElementById('pw-input').focus();
-}
 
 firebase.initializeApp({
   apiKey: "AIzaSyCU_AxJYMWuRUGULdQ44rwPiFelLvqx0ow",
@@ -988,9 +697,20 @@ firebase.initializeApp({
 var db = firebase.database();
 var LEDGER_REF = db.ref('ledger');
 
-if (localStorage.getItem('dm_theme') === 'light') { document.body.classList.add('light'); document.getElementById('theme-btn').textContent = '🌙'; }
-
-load();
+// Stays logged in on this device until "Log out"
+firebase.auth().onAuthStateChanged(function(user) {
+  if (user) {
+    var name = '1';
+    for (var k in EMAILS) { if (EMAILS[k] === user.email) name = k; }
+    currentUser = name;
+    document.getElementById('pw-screen').style.display = 'none';
+    document.getElementById('user-name-display').textContent = name;
+    document.getElementById('user-display').style.display = 'block';
+    load();
+  } else {
+    document.getElementById('pw-screen').style.display = 'flex';
+  }
+});
 </script>
 </body>
 </html>
